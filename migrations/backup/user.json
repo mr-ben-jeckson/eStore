@@ -1,0 +1,24 @@
+[
+    {
+        "_id": "63c0389bb2907542251b893b",
+        "name": "Ben Jeckson",
+        "email": "thanhtikexaw@gmail.com",
+        "phone": "09700800300",
+        "password": "$2a$10$QEzNvLbGzDGzUhAK4XqhXOs4.0YQoiRLE4GMoohmizjsQDgJs9Dca",
+        "roles": [],
+        "permissions": [],
+        "created": "2023-01-12T16:43:07.930Z",
+        "__v": 0
+    },
+    {
+        "_id": "63c0389cb2907542251b893c",
+        "name": "Supervisor Ben",
+        "email": "ben@gmail.com",
+        "phone": "09300800700",
+        "password": "$2a$10$Dcy08gon9IUCHdjtQYukt.UkL/4IC5AWChsKw9yZ6FEtCZHMbqCoG",
+        "roles": [],
+        "permissions": [],
+        "created": "2023-01-12T16:43:08.000Z",
+        "__v": 0
+    }
+]
