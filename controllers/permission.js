@@ -3,13 +3,13 @@ const Helper = require('../utils/helper');
 
 //Get Permissions
 const all = async (req, res, next) => {
-    let permits = await DB.find();
+    let permits = await DB.find().select('-__v');
     Helper.fMsg(res, "Permissions", permits);
 }
 
 //Get Single Permission
 const get = async (req, res, next) => {
-    let permit = await DB.findById(req.params.id);
+    let permit = await DB.findById(req.params.id).select('-__v');
     if (permit) {
         Helper.fMsg(res, "Single Permission", permit);
     } else {
@@ -23,13 +23,40 @@ const add = async (req, res, next) => {
     if (permit) {
         next(new Error(`${permit.name} is already used. Try Other`));
     } else {
-        let permit = await new DB(req.body).save();
+        await new DB(req.body).save();
+        let permit = await DB.findOne({ name: req.body.name}).select('-__v');
         Helper.fMsg(res, "Permission Created", permit);
+    }
+}
+
+//Patching Permission
+const patch = async (req, res, next) => {
+    let permit = await DB.findById(req.params.id);
+    if (permit) {
+        await DB.findByIdAndUpdate(permit._id, req.body);
+        let updatePermit = await DB.findById(permit._id).select('-__v');
+        Helper.fMsg(res, "Permission Updated", updatePermit);
+    } else {
+        next(new Error(`${req.params.id} is invalid. Try Other`));
+    }
+}
+
+//Dropping Single Permission
+const drop = async (req, res, next) => {
+    let permit = await DB.findById(req.params.id);
+    if (permit) {
+        let dropPermit = permit.name;
+        await DB.findByIdAndDelete(permit._id);
+        Helper.fMsg(res, `Deleted Permission = ${dropPermit}`);
+    } else {
+        next(new Error(`Cannot delete invalid Id = ${req.params.id}`));
     }
 }
 
 module.exports = {
     add,
     get,
+    patch,
+    drop,
     all
 }

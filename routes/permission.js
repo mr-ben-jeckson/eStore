@@ -10,6 +10,8 @@ router.post('/', [validateBody(PermitSchema.add), controller.add]);
 
 //Single Permission with Id routes
 router.route('/:id')
-    .get([validateParam(AllSchema.id, 'id'), controller.get]);
+    .get([validateParam(AllSchema.id, 'id'), controller.get])
+    .patch([validateParam(AllSchema.id, 'id'), controller.patch])
+    .delete([validateParam(AllSchema.id, 'id'), controller.drop]);
 
 module.exports = router;

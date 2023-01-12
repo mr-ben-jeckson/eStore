@@ -16,6 +16,9 @@ app.use(express.json());
 //Permission Routes
 const permissionRoute = require('./routes/permission');
 app.use('/permission', permissionRoute);
+// Role Routes
+const roleRoute = require('./routes/role');
+app.use('/role', roleRoute);
 
 // ERROR HANDLING
 app.use((err, req, res, next) => {

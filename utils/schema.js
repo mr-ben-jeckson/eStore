@@ -6,6 +6,12 @@ module.exports = {
             name: Joi.string().required()
         })
     },
+    //Role Validation
+    RoleSchema: {
+        add: Joi.object({
+            name: Joi.string().required()
+        })
+    },
     //MongoDB Id Validation
     AllSchema: {
         id: Joi.object({
