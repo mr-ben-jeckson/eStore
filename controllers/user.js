@@ -1,7 +1,8 @@
 const DB = require('../models/user');
 const Helper = require('../utils/helper');
+const redis = require('../utils/redis');
 
-//User Registration and Unique Checking
+/* User Registration and Unique Checking */
 const register = async (req, res, next) => {
     let userEmail = await DB.findOne({ email: req.body.email })
     if (userEmail) {
@@ -18,13 +19,15 @@ const register = async (req, res, next) => {
     Helper.fMsg(res, "User Registration Success", registerUser);
 }
 
-//User Authentication or Logging In
-const login = async(req, res, next) => {
+/* User Authentication or Logging In */
+const login = async (req, res, next) => {
     let validUser = await DB.findOne({ phone: req.body.phone }).populate('roles permissions').select('-__v');
-    if(validUser) {
-        if(Helper.comparePass(req.body.password, validUser.password)) {
+    if (validUser) {
+        if (Helper.comparePass(req.body.password, validUser.password)) {
             let user = validUser.toObject();
             delete user.password;
+            user.token = Helper.makeToken(user);
+            redis.set(user._id, user);
             Helper.fMsg(res, "Login Success", user);
         } else {
             next(new Error("Creditential does not match in our records"))

@@ -1,13 +1,13 @@
 const DB = require('../models/permission');
 const Helper = require('../utils/helper');
 
-//Get Permissions
+/* Get Permissions */
 const all = async (req, res, next) => {
     let permits = await DB.find().select('-__v');
     Helper.fMsg(res, "Permissions", permits);
 }
 
-//Get Single Permission
+/* Get Single Permission */
 const get = async (req, res, next) => {
     let permit = await DB.findById(req.params.id).select('-__v');
     if (permit) {
@@ -17,7 +17,7 @@ const get = async (req, res, next) => {
     }
 }
 
-//Permission Unique Checking and Saving 
+/* Permission Unique Checking and Saving */ 
 const add = async (req, res, next) => {
     let permit = await DB.findOne({ name: req.body.name });
     if (permit) {
@@ -29,7 +29,7 @@ const add = async (req, res, next) => {
     }
 }
 
-//Patching Permission
+/* Patching Permission */
 const patch = async (req, res, next) => {
     let permit = await DB.findById(req.params.id);
     if (permit) {
@@ -41,7 +41,7 @@ const patch = async (req, res, next) => {
     }
 }
 
-//Dropping Single Permission
+/* Dropping Single Permission */
 const drop = async (req, res, next) => {
     let permit = await DB.findById(req.params.id);
     if (permit) {

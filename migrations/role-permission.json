@@ -1,0 +1,24 @@
+{
+    "roles": [
+        {
+            "name": "Super Admin"
+        },
+        {
+            "name": "Manager"
+        },
+        {
+            "name": "Admin"
+        }
+    ],
+    "permissions": [
+        {
+            "name": "USER_PERMISSION"
+        },
+        {
+            "name": "ROLE_PERMISSION"
+        },
+        {
+            "name": "CATEGORY_PERMISSION"
+        }
+    ]
+}
