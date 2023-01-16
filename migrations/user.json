@@ -1,14 +1,14 @@
 [
     {
-        "name": "Ben Jeckson",
-        "email": "thanhtikexaw@gmail.com",
+        "name": "Super Admin",
+        "email": "superadmin@gmail.com",
         "phone": "09700800300",
         "password": "admin123"
     },
     {
         "name": "Supervisor Ben",
-        "email": "ben@gmail.com",
+        "email": "supervisor@gmail.com",
         "phone": "09300800700",
-        "password": "admin123"
+        "password": "supervisor123"
     }
 ]

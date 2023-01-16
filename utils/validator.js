@@ -47,5 +47,16 @@ module.exports = {
                 next(new Error("Tokenization Error: Header"))
             }
         }
+    },
+    /* Authorization for Role */
+    validateRole: (role) => {
+        return async (req, res, next) => {
+            let roleCheck = req.user.roles.find(ro => ro.name == role);
+            if (roleCheck) {
+                next();
+            } else {
+                next(new Error("No permission - You don't have this role to do"));
+            }
+        }
     }
 }

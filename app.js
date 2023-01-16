@@ -29,10 +29,11 @@ app.use('/user', userRoute);
 
 /* Run Functions  */
 const defaultData = async() => {
-    let migration = require('./migrations/migrate');
+    // let migration = require('./migrations/migrate');
     /* Migration To Tables */
     // await migration.migrateUser();
     // await migration.migrateRolePermission();
+    // await migration.migrateRoleAdd();
     /* Table backs up to Json File */
     // await migration.backup(); 
 }

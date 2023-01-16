@@ -1,4 +1,5 @@
 const DB = require('../models/user');
+const roleDB = require('../models/role')
 const Helper = require('../utils/helper');
 const redis = require('../utils/redis');
 
@@ -37,7 +38,45 @@ const login = async (req, res, next) => {
     }
 }
 
+/* User Adding Roles */
+const addRole = async (req, res, next) => {
+    let assignUser = await DB.findById(req.body.userId);
+    let assignRole = await roleDB.findById(req.body.roleId);
+    if (assignUser && assignRole) {
+        let checkRole = assignUser.roles.find(ro => ro.equals(assignRole._id));
+        if (checkRole) {
+            next(new Error(`${assignUser.name} already has the role: ${assignRole.name}`));
+        } else {
+            await DB.findByIdAndUpdate(assignUser._id, { $push: { roles: assignRole._id } });
+            let user = await DB.findById(assignUser._id).populate('roles').select('-__v -password');
+            Helper.fMsg(res, `${assignUser.name} access the role: ${assignRole.name}`, user);
+        }
+    } else {
+        next(new Error("User and Role ID must be valided"))
+    }
+}
+
+/* Removing Role from Users */
+const removeRole = async (req, res, next) => {
+    let syncUser = await DB.findById(req.body.userId);
+    let removeRole = await roleDB.findById(req.body.roleId);
+    if (syncUser && removeRole) {
+        let checkRole = syncUser.roles.find(ro => ro.equals(removeRole._id));
+        if (checkRole) {
+            await DB.findByIdAndUpdate(syncUser._id, { $pull: { roles: removeRole._id } });
+            let user = await DB.findById(syncUser._id).populate('roles').select('-__v -password');
+            Helper.fMsg(res, `the role: ${removeRole.name} was removed from ${syncUser.name}`, user);
+        } else {
+            next(new Error(`the role : ${removeRole.name} cannot be removed form ${syncUser.name}`));
+        }
+    } else {
+        next(new Error("User and Role ID must be valided"))
+    }
+}
+
 module.exports = {
     register,
-    login
+    login,
+    addRole,
+    removeRole
 }

@@ -8,7 +8,7 @@ const Helper = require('../utils/helper');
 const migrateUser = () => {
     let data = fs.readFileSync('./migrations/user.json');
     let users = JSON.parse(data);
-    users.forEach(async(user) => {
+    users.forEach(async (user) => {
         user.password = Helper.encode(user.password);
         let migartion = await new UserDB(user).save();
         console.log(migartion);
@@ -23,14 +23,22 @@ const migrateRolePermission = () => {
         let migration = await new RoleDB(role).save();
         console.log(migration);
     });
-    rolePermit.permissions.forEach(async permission =>{
+    rolePermit.permissions.forEach(async permission => {
         let migration = await new PermitDB(permission).save();
         console.log(migration);
     });
 }
 
+/* Adding role to super admin */
+const migrateRoleAdd = async () => {
+    let user = await UserDB.findOne({ email: "superadmin@gmail.com" });
+    let role = await RoleDB.findOne({ name: "Super Admin" });
+    await UserDB.findByIdAndUpdate(user._id, { $push: { roles: role._id } });
+    console.log("Adding Role Success");
+}
+
 /* Backup Users to Json File */
-const backup = async() => {
+const backup = async () => {
     let users = await UserDB.find();
     fs.writeFileSync('./migrations/backup/user.json', JSON.stringify(users));
     console.log("Back up Success!");
@@ -39,5 +47,6 @@ const backup = async() => {
 module.exports = {
     migrateUser,
     migrateRolePermission,
+    migrateRoleAdd,
     backup
 }
