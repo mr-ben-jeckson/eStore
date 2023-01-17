@@ -48,7 +48,7 @@ module.exports = {
             }
         }
     },
-    /* Authorization for Role */
+    /* Authorization for one Role */
     validateRole: (role) => {
         return async (req, res, next) => {
             let roleCheck = req.user.roles.find(ro => ro.name == role);
@@ -57,6 +57,21 @@ module.exports = {
             } else {
                 next(new Error("No permission - You don't have this role to do"));
             }
+        }
+    },
+    /* Authorization for multiple roles && Role must Array ["Super Admin", "Manager", "Admin"]*/
+    hasRole: (roles) => {
+        return async(req, res, next) => {
+            let check = false;
+            for(i=0; i<req.user.roles.length; i++){
+                let hasRole = req.user.roles.find(ro => ro.name === roles[i]);
+                if(hasRole) {
+                    check = true;
+                    break;
+                }
+            }
+            if(check) next();
+            else next(new Error("No permission - You don't have any role to access"));
         }
     }
 }

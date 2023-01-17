@@ -18,6 +18,11 @@ module.exports = {
         addRole: Joi.object({
             userId: Joi.string().regex(/^[0-9a-fA-F]{24}$/),
             roleId: Joi.string().regex(/^[0-9a-fA-F]{24}$/)
+        }),
+        /* Adding Permission Validator */
+        addPermission: Joi.object({
+            userId: Joi.string().regex(/^[0-9a-fA-F]{24}$/),
+            permitId: Joi.string().regex(/^[0-9a-fA-F]{24}$/)
         })
     },
     /* Permission Validation */

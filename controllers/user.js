@@ -1,5 +1,6 @@
 const DB = require('../models/user');
-const roleDB = require('../models/role')
+const roleDB = require('../models/role');
+const permitDB = require('../models/permission');
 const Helper = require('../utils/helper');
 const redis = require('../utils/redis');
 
@@ -45,7 +46,7 @@ const addRole = async (req, res, next) => {
     if (assignUser && assignRole) {
         let checkRole = assignUser.roles.find(ro => ro.equals(assignRole._id));
         if (checkRole) {
-            next(new Error(`${assignUser.name} already has the role: ${assignRole.name}`));
+            next(new Error(`${assignUser.name} has already the role: ${assignRole.name}`));
         } else {
             await DB.findByIdAndUpdate(assignUser._id, { $push: { roles: assignRole._id } });
             let user = await DB.findById(assignUser._id).populate('roles').select('-__v -password');
@@ -74,9 +75,47 @@ const removeRole = async (req, res, next) => {
     }
 }
 
+/* Adding Permission to User */
+const addPermission = async (req, res, next) => {
+    let assignUser = await DB.findById(req.body.userId);
+    let assignPermit = await permitDB.findById(req.body.permitId);
+    if (assignUser && assignPermit) {
+        let checkPermit = assignUser.permissions.find(pm => pm.equals(assignPermit._id));
+        if (checkPermit) {
+            next(new Error(`${assignUser.name} has already the permission: ${assignPermit.name}`));
+        } else {
+            await DB.findByIdAndUpdate(assignUser._id, { $push: { permissions: assignPermit._id } });
+            let user = await DB.findById(assignUser._id).populate('permissions').select('-__v -password');
+            Helper.fMsg(res, `${assignUser.name} access the permission: ${assignPermit.name}`, user);
+        }
+    } else {
+        next(new Error("User and Permission ID must be valided"))
+    }
+}
+
+/* Removing Permission from Users */
+const removePermission = async (req, res, next) => {
+    let syncUser = await DB.findById(req.body.userId);
+    let removePermit = await permitDB.findById(req.body.permitId);
+    if (syncUser && removePermit) {
+        let checkPermit = syncUser.permissions.find(pm => pm.equals(removePermit._id));
+        if (checkPermit) {
+            await DB.findByIdAndUpdate(syncUser._id, { $pull: { permissions: removePermit._id } });
+            let user = await DB.findById(syncUser._id).populate('permissions').select('-__v -password');
+            Helper.fMsg(res, `the permission: ${removePermit.name} was removed from ${syncUser.name}`, user);
+        } else {
+            next(new Error(`the permission : ${removePermit.name} cannot be removed form ${syncUser.name}`));
+        }
+    } else {
+        next(new Error("User and Permission ID must be valided"))
+    }
+}
+
 module.exports = {
     register,
     login,
     addRole,
-    removeRole
+    removeRole,
+    addPermission,
+    removePermission
 }
