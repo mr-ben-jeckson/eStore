@@ -5,14 +5,18 @@ require('dotenv').config();
 const express = require('express');
 app = express();
 
+/* Declared File Upload */
+const fileupload = require('express-fileupload');
+
 /* Declared Mongoose and MongoDB Set Up */
 const mongoose = require('mongoose');
-const { insertMany } = require('./models/role');
 mongoose.set('strictQuery', true);
 mongoose.connect(`mongodb://127.0.0.1:27017/${process.env.DB_NAME}`);
 
 /* APP uses Json */
 app.use(express.json());
+/* APP uses File Upload */
+app.use(fileupload());
 
 /* Permission Routes */
 const permissionRoute = require('./routes/permission');
@@ -20,15 +24,19 @@ app.use('/permission', permissionRoute);
 
 /* Role Routes */
 const roleRoute = require('./routes/role');
-app.use('/role', roleRoute);
+const { validateRole } = require('./utils/validator');
+app.use('/role', validateRole('Super Admin'), roleRoute);
 
 /*  User Routes */
 const userRoute = require('./routes/user');
 app.use('/user', userRoute);
 
+/* Category Routes */
+const categoryRoute = require('./routes/category');
+app.use('/category', categoryRoute);
 
 /* Run Functions  */
-const defaultData = async() => {
+const defaultData = async () => {
     // let migration = require('./migrations/migrate');
     /* Migration To Tables */
     // await migration.migrateUser();

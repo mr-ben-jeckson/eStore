@@ -61,17 +61,32 @@ module.exports = {
     },
     /* Authorization for multiple roles && Role must Array ["Super Admin", "Manager", "Admin"]*/
     hasRole: (roles) => {
-        return async(req, res, next) => {
+        return async (req, res, next) => {
             let check = false;
-            for(i=0; i<req.user.roles.length; i++){
+            for (i = 0; i < req.user.roles.length; i++) {
                 let hasRole = req.user.roles.find(ro => ro.name === roles[i]);
-                if(hasRole) {
+                if (hasRole) {
                     check = true;
                     break;
                 }
             }
-            if(check) next();
+            if (check) next();
             else next(new Error("No permission - You don't have any role to access"));
+        }
+    },
+    /* Authorization for multiple permission && Permission must Array ["CREATE_PRODUCTS", "DELETE_PRODUCTS"]*/
+    hasPermit: (permissions) => {
+        return async (req, res, next) => {
+            let check = false;
+            for (i = 0; i < req.user.permissions.length; i++) {
+                let hasPermit = req.user.permissions.find(pm => pm.name === permissions[i]);
+                if (hasPermit) {
+                    check = true;
+                    break;
+                }
+            }
+            if (check) next();
+            else next(new Error("No Permission - You don't has any permission to access"));
         }
     }
 }
