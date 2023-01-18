@@ -34,7 +34,7 @@ const get = async (req, res, next) => {
 const patch = async (req, res, next) => {
     let validCat = await DB.findById(req.params.id);
     if (validCat) {
-        if (req.files && req.files.file) {
+        if (req.body.image) {
             deleteFile(validCat.image);
             await DB.findByIdAndUpdate(validCat._id, req.body);
             let cat = await DB.findById(validCat._id);
@@ -45,6 +45,7 @@ const patch = async (req, res, next) => {
             Helper.fMsg(res, "Category Updated", cat);
         }
     } else {
+        deleteFile(req.body.image)
         next(new Error("Category ID must be valided to delete"));
     }
 }

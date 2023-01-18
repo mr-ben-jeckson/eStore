@@ -34,6 +34,9 @@ app.use('/user', userRoute);
 /* Category Routes */
 const categoryRoute = require('./routes/category');
 app.use('/category', categoryRoute);
+/* Sub Category Routes */
+const subCatRoute = require('./routes/subcategory');
+app.use('/subcategory', subCatRoute);
 
 /* Run Functions  */
 const defaultData = async () => {

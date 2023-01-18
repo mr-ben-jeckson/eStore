@@ -43,6 +43,18 @@ module.exports = {
             permitId: Joi.string().regex(/^[0-9a-fA-F]{24}$/)
         })
     },
+    /* Categories Validation  */
+    CatSchema: {
+        add: Joi.object({
+            name: Joi.string().required()
+        }),
+        addSub: Joi.object({
+            name: Joi.string().required(),
+            image: Joi.string(),
+            catid: Joi.string().regex(/^[0-9a-fA-F]{24}$/),
+            subcat: Joi.optional()
+        })
+    },
     /* MongoDB Id Validation */
     AllSchema: {
         id: Joi.object({

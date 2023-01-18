@@ -23,7 +23,7 @@ const register = async (req, res, next) => {
 
 /* User Authentication or Logging In */
 const login = async (req, res, next) => {
-    let validUser = await DB.findOne({ phone: req.body.phone }).populate('roles permissions').select('-__v');
+    let validUser = await DB.findOne({ phone: req.body.phone }).populate('roles permissions');
     if (validUser) {
         if (Helper.comparePass(req.body.password, validUser.password)) {
             let user = validUser.toObject();
@@ -49,7 +49,7 @@ const addRole = async (req, res, next) => {
             next(new Error(`${assignUser.name} has already the role: ${assignRole.name}`));
         } else {
             await DB.findByIdAndUpdate(assignUser._id, { $push: { roles: assignRole._id } });
-            let user = await DB.findById(assignUser._id).populate('roles').select('-__v -password');
+            let user = await DB.findById(assignUser._id).populate('roles').select('-password');
             Helper.fMsg(res, `${assignUser.name} access the role: ${assignRole.name}`, user);
         }
     } else {
@@ -65,7 +65,7 @@ const removeRole = async (req, res, next) => {
         let checkRole = syncUser.roles.find(ro => ro.equals(removeRole._id));
         if (checkRole) {
             await DB.findByIdAndUpdate(syncUser._id, { $pull: { roles: removeRole._id } });
-            let user = await DB.findById(syncUser._id).populate('roles').select('-__v -password');
+            let user = await DB.findById(syncUser._id).populate('roles').select('-password');
             Helper.fMsg(res, `the role: ${removeRole.name} was removed from ${syncUser.name}`, user);
         } else {
             next(new Error(`the role : ${removeRole.name} cannot be removed form ${syncUser.name}`));
@@ -85,7 +85,7 @@ const addPermission = async (req, res, next) => {
             next(new Error(`${assignUser.name} has already the permission: ${assignPermit.name}`));
         } else {
             await DB.findByIdAndUpdate(assignUser._id, { $push: { permissions: assignPermit._id } });
-            let user = await DB.findById(assignUser._id).populate('permissions').select('-__v -password');
+            let user = await DB.findById(assignUser._id).populate('permissions').select('-password');
             Helper.fMsg(res, `${assignUser.name} access the permission: ${assignPermit.name}`, user);
         }
     } else {
@@ -101,7 +101,7 @@ const removePermission = async (req, res, next) => {
         let checkPermit = syncUser.permissions.find(pm => pm.equals(removePermit._id));
         if (checkPermit) {
             await DB.findByIdAndUpdate(syncUser._id, { $pull: { permissions: removePermit._id } });
-            let user = await DB.findById(syncUser._id).populate('permissions').select('-__v -password');
+            let user = await DB.findById(syncUser._id).populate('permissions').select('-password');
             Helper.fMsg(res, `the permission: ${removePermit.name} was removed from ${syncUser.name}`, user);
         } else {
             next(new Error(`the permission : ${removePermit.name} cannot be removed form ${syncUser.name}`));
