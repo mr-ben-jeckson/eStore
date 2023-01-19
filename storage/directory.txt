@@ -1,0 +1,2 @@
+Here is file public directory
+storage/*
