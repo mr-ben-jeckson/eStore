@@ -8,6 +8,15 @@ const all = async (req, res) => {
     Helper.fMsg(res, "All Sub Categories", subCats);
 }
 
+const get = async (req, res, next) => {
+    let subCat = await DB.find();
+    if(subCat) {
+        Helper.fMsg(res, "Single sub category", subCat);
+    } else {
+        next(new Error(`Invalid ID: ${req.params.id}, You cannot get`));
+    }
+}
+
 const add = async (req, res, next) => {
     let existSub = await DB.findOne({ name: req.body.name });
     if (existSub) {
@@ -54,7 +63,7 @@ const drop = async (req, res, next) => {
     let delSub = await DB.findById(req.params.id);
     if (delSub) {
         let subName = delSub.name;
-        await catDB.findByIdAndUpdate(delSub._id, { $pull: { subcats: delSub.id } });
+        await catDB.findByIdAndUpdate(delSub.catid, { $pull: { subcats: delSub.id } });
         deleteFile(delSub.image);
         await DB.findByIdAndDelete(delSub._id);
         Helper.fMsg(res, `${subName}: Sub category was deleted and removed from parent category`);
@@ -65,6 +74,7 @@ const drop = async (req, res, next) => {
 
 module.exports = {
     all,
+    get,
     add,
     patch,
     drop

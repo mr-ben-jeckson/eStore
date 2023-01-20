@@ -9,6 +9,7 @@ router.post('/', [saveFile, validateBody(CatSchema.addSub), controller.add])
     .get('/', controller.all);
 /* Sub Category Single routes with Id */
 router.route('/:id')
+    .get(controller.get)
     .patch([ patchFile, controller.patch])
     .delete(controller.drop)    
 

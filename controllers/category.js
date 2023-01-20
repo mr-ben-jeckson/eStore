@@ -18,7 +18,7 @@ const get = async(req, res, next) => {
 }
 
 const add = async(req, res, next) => {
-    let validCat = await DB.find({name: req.body.name});
+    let validCat = await DB.findOne({name: req.body.name});
     if(validCat) {
         deleteFile(req.body.image);
         next(new Error(`${validCat.name} already used in the categories`));
@@ -45,11 +45,12 @@ const drop = async(req, res, next) => {
     if(delCat) {
         let name = delCat.name;
         delCat.subcats.forEach( async(sub) => {
-            let delSub = await DB.findById(sub);
+            let delSub = await subDB.findById(sub);
             deleteFile(delSub.image);
             await subDB.findByIdAndDelete(delSub._id);
         });
         deleteFile(delCat.image);
+        await DB.findByIdAndDelete(delCat._id);
         Helper.fMsg(res, `${name} : Category was deleted and all the subcategories also was removed`)
     } else {       
         next(new Error(`Invalid ID: ${req.params.id}, You cannot delete`));
