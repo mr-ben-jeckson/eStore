@@ -8,7 +8,7 @@ module.exports = {
     comparePass: (plain, hash) => bcrypt.compareSync(plain, hash),
 
     /* Json Formatted Message Function */
-    fMsg: (res, msg = "", result = []) => res.status(200).json({ con: true, msg, result }),
+    fMsg: (res, msg = "", data = [], status = '' || 200) => res.status(status).json({ con: true, msg, data }),
 
     /* Creating Token */
     makeToken: (payload) => jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: '1h' })

@@ -27,10 +27,10 @@ const add = async (req, res, next) => {
         if (validCat) {
             let newSub = await DB(req.body).save();
             await catDB.findByIdAndUpdate(validCat._id, { $push: { subcats: newSub.id } });
-            Helper.fMsg(res, "Sub category was added", newSub);
+            Helper.fMsg(res, "Sub category was added", newSub, 201);
         } else {
             deleteFile(req.body.image);
-            next(new Error(`Invalid: ${req.body.catid} does not match category id`));
+            next(new Error(`Invalid ID: ${req.body.catid} does not match category id`));
         }
     }
 }

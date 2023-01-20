@@ -37,6 +37,10 @@ app.use('/category', categoryRoute);
 /* Sub Category Routes */
 const subCatRoute = require('./routes/subcategory');
 app.use('/subcategory', subCatRoute);
+/* Child Category Routes */
+const childCatRoute = require('./routes/childcategory');
+app.use('/childcategory', childCatRoute);
+
 
 /* Run Functions  */
 const defaultData = async () => {

@@ -10,7 +10,7 @@ const add = async (req, res, next) => {
     } else {
         await new DB(req.body).save();
         let role = await DB.findOne({ name: req.body.name });
-        Helper.fMsg(res, "Role is added", role);
+        Helper.fMsg(res, "Role is added", role, 201);
     }
 }
 

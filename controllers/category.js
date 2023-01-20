@@ -24,7 +24,7 @@ const add = async(req, res, next) => {
         next(new Error(`${validCat.name} already used in the categories`));
     } else {
         let addCat = await new DB(req.body).save();
-        Helper.fMsg(res, "New Cateogry was added", addCat);
+        Helper.fMsg(res, "New Cateogry was added", addCat, 201);
     }
 }
 
