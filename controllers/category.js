@@ -1,25 +1,26 @@
 const DB = require('../models/category');
 const subDB = require('../models/subcategory');
+const childDB = require('../models/childcategory');
 const Helper = require('../utils/helper');
 const { deleteFile } = require('../utils/upload');
 
-const all = async(req, res) => {
+const all = async (req, res) => {
     let cats = await DB.find();
     Helper.fMsg(res, "All Categories", cats);
 }
 
-const get = async(req, res, next) => {
+const get = async (req, res, next) => {
     let cat = await DB.findById(req.params.id);
-    if(cat) {
+    if (cat) {
         Helper.fMsg(res, "Single Category", cat);
     } else {
         next(new Error(`Invalid ID: ${req.params.id}, You cannot get`));
     }
 }
 
-const add = async(req, res, next) => {
-    let validCat = await DB.findOne({name: req.body.name});
-    if(validCat) {
+const add = async (req, res, next) => {
+    let validCat = await DB.findOne({ name: req.body.name });
+    if (validCat) {
         deleteFile(req.body.image);
         next(new Error(`${validCat.name} already used in the categories`));
     } else {
@@ -28,31 +29,36 @@ const add = async(req, res, next) => {
     }
 }
 
-const patch = async(req, res, next) => {
+const patch = async (req, res, next) => {
     let editCat = await DB.findById(req.params.id)
-    if(editCat) {
+    if (editCat) {
         await DB.findByIdAndUpdate(editCat._id, req.body);
     } else {
-        if(req.body.image) {
+        if (req.body.image) {
             deleteFile(req.body.image);
         }
         next(new Error(`Invalid ID: ${req.params.id}, You cannot edit`));
     }
 }
 
-const drop = async(req, res, next) => {
+const drop = async (req, res, next) => {
     let delCat = await DB.findById(req.params.id);
-    if(delCat) {
+    if (delCat) {
         let name = delCat.name;
-        delCat.subcats.forEach( async(sub) => {
-            let delSub = await subDB.findById(sub);
-            deleteFile(delSub.image);
-            await subDB.findByIdAndDelete(delSub._id);
+        delCat.subcats.forEach(async (subId) => {
+            let sub = await subDB.findById(subId);
+            deleteFile(sub.image);
+            sub.childcat.forEach(async (childId) => {
+                let child = await childDB.findById(childId);
+                deleteFile(child.image);
+                await childDB.findByIdAndDelete(child._id);
+            });
+            await subDB.findByIdAndDelete(sub._id);
         });
         deleteFile(delCat.image);
         await DB.findByIdAndDelete(delCat._id);
-        Helper.fMsg(res, `${name} : Category was deleted and all the subcategories also was removed`)
-    } else {       
+        Helper.fMsg(res, `${name} : Category was deleted and all the sub and its child categories also were removed`)
+    } else {
         next(new Error(`Invalid ID: ${req.params.id}, You cannot delete`));
     }
 }

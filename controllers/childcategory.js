@@ -1,4 +1,3 @@
-const e = require('express');
 const DB = require('../models/childcategory');
 const subDB = require('../models/subcategory');
 const Helper = require('../utils/helper');
@@ -19,26 +18,58 @@ const get = async (req, res, next) => {
 }
 
 const add = async (req, res, next) => {
-    let newChildCat = '93caaa7c178cdd0293a6c539';
-    try {
+    let existChildCat = await DB.findOne({ name: req.body.name });
+    if (existChildCat) {
+        deleteFile(req.body.image);
+        next(new Error(`${existChildCat.name} is already used in child categories`));
+    } else {
         let subCat = await subDB.findById(req.body.subcatid);
-        await DB.findByIdAndUpdate(subCat._id, {$push: {childcat: newChildCat}});
-    } catch (err) {
-        // console.log(err);
-        next(new Error(`Invalid ID : ${req.body.subcatid}, You cannot add`));
-        return;
+        if (subCat) {
+            let newChildCat = await new DB(req.body).save();
+            await subDB.findByIdAndUpdate(subCat._id, { $push: { childcat: newChildCat._id } });
+            Helper.fMsg(res, "Child Category was added", newChildCat, 201);
+        } else {
+            deleteFile(req.body.image);
+            next(new Error(`Invalid ID : ${req.body.subcatid} does not match sub category id`));
+        }
     }
-    Helper.fMsg(res, "New Child Category added", req.body)
-    
-    
 }
 
 const patch = async (req, res, next) => {
-
+    let editChildCat = await DB.findById(req.params.id);
+    if (editChildCat) {
+        if (req.body.subcatid) {
+            try {
+                await subDB.findById(req.body.subcatid);
+            } catch (error) {
+                delete req.body.subcatid;
+            }
+            await DB.findByIdAndUpdate(editChildCat._id, req.body);
+            let updateChildCat = await DB.findById(editChildCat._id);
+            let sameParentCat = editChildCat.subcatid == updateChildCat.subcatid ? true : false;
+            if (!sameParentCat) {
+                await subDB.findByIdAndUpdate(editChildCat.subcatid, { $pull: { childcat: editChildCat._id } });
+                await subDB.findByIdAndUpdate(updateChildCat.subcatid, { $push: { childcat: updateChildCat._id } });
+            }
+            Helper.fMsg(res, "Child Category was updated", updateChildCat);
+        }
+    } else {
+        deleteFile(req.body.image);
+        next(new Error(`Invalid ID : ${req.params.id}, You cannot edit`));
+    }
 }
 
 const drop = async (req, res, next) => {
-
+    let delChildCat = await DB.findById(req.params.id);
+    if(delChildCat) {
+        deleteFile(delChildCat.image);
+        await subDB.findByIdAndUpdate(delChildCat.subcatid, {$pull: { childcat: delChildCat._id }});
+        let name = delChildCat.name;
+        await DB.findByIdAndDelete(delChildCat._id);
+        Helper.fMsg(res, `${name} : Child Category was deleted and removed from its sub category`);
+    } else {
+        next(new Error(`Invalid ID : ${req.params.id}, You cannot delete`));
+    }
 }
 
 module.exports = {

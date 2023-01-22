@@ -52,7 +52,14 @@ module.exports = {
             name: Joi.string().required(),
             image: Joi.string(),
             catid: Joi.string().regex(/^[0-9a-fA-F]{24}$/),
-            subcat: Joi.optional()
+            childcat: Joi.optional(),
+            user: Joi.optional()
+        }),
+        addChild: Joi.object({
+            name: Joi.string().required(),
+            image: Joi.string().required(),
+            subcatid: Joi.string().regex(/^[0-9a-fA-F]{24}$/),
+            user: Joi.optional()
         })
     },
     /* MongoDB Id Validation */

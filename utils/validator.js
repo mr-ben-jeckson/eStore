@@ -25,6 +25,19 @@ module.exports = {
             }
         }
     },
+    /* Validation for Request Param */
+    validateId: (schema, name, check) => {
+        return (req, res, next) => {
+            let obj = {};
+            obj[`${name}`] = check;
+            let result = schema.validate(obj);
+            if (result.error) {
+                next(new Error(result.error.details[0].message));
+            } else {
+                next();
+            }
+        }
+    },
     /* Tokenization and Assign Req from Redis */
     validateToken: () => {
         return async (req, res, next) => {

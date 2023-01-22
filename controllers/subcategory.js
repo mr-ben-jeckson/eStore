@@ -1,5 +1,6 @@
 const DB = require('../models/subcategory');
 const catDB = require('../models/category');
+const childDB = require('../models/childcategory');
 const Helper = require('../utils/helper');
 const { deleteFile } = require('../utils/upload');
 
@@ -10,7 +11,7 @@ const all = async (req, res) => {
 
 const get = async (req, res, next) => {
     let subCat = await DB.find();
-    if(subCat) {
+    if (subCat) {
         Helper.fMsg(res, "Single sub category", subCat);
     } else {
         next(new Error(`Invalid ID: ${req.params.id}, You cannot get`));
@@ -42,17 +43,24 @@ const patch = async (req, res, next) => {
         if (req.body.image) {
             deleteFile(editSub.image);
         }
+        if (req.body.catid) {
+            try {
+                await catDB.findById(req.body.catid);
+            } catch (error) {
+                delete req.body.catid;
+            }
+        }
         await DB.findByIdAndUpdate(editSub._id, req.body);
         let updateSub = await DB.findById(editSub._id);
         let sameParentCat = editSub.catid == updateSub.catid ? true : false;
-        if (!sameParentCat && req.body.catid) {
+        if (!sameParentCat) {
             await catDB.findByIdAndUpdate(parentCat._id, { $pull: { subcats: editSub.id } });
             let updateParentCat = await catDB.findById(updateSub.catid);
             await catDB.findByIdAndUpdate(updateParentCat._id, { $push: { subcats: updateSub.id } });
         }
         Helper.fMsg(res, "Sub category was updated", updateSub);
     } else {
-        if(req.body.image) {
+        if (req.body.image) {
             deleteFile(req.body.image);
         }
         next(new Error(`Invalid ID: ${req.params.id}, You cannot edit`));
@@ -65,8 +73,13 @@ const drop = async (req, res, next) => {
         let subName = delSub.name;
         await catDB.findByIdAndUpdate(delSub.catid, { $pull: { subcats: delSub.id } });
         deleteFile(delSub.image);
+        delSub.childcat.forEach(async (childId) => {
+            let child = await childDB.findById(childId);
+            deleteFile(child.image);
+            await childDB.findByIdAndDelete(child._id);
+        });
         await DB.findByIdAndDelete(delSub._id);
-        Helper.fMsg(res, `${subName}: Sub category was deleted and removed from parent category`);
+        Helper.fMsg(res, `${subName}: Sub category was deleted and Its child categories were removed`);
     } else {
         next(new Error(`Invalid ID : ${req.params.id}, You cannot delete`));
     }
