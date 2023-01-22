@@ -62,6 +62,14 @@ module.exports = {
             user: Joi.optional()
         })
     },
+    /* Tag Validation */
+    TagSchema: {
+        addTag: Joi.object({
+            name: Joi.string().required(),
+            image: Joi.string().required(),
+            user: Joi.optional()
+        })
+    },
     /* MongoDB Id Validation */
     AllSchema: {
         id: Joi.object({

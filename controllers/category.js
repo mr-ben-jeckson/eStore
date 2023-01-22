@@ -3,7 +3,6 @@ const subDB = require('../models/subcategory');
 const childDB = require('../models/childcategory');
 const Helper = require('../utils/helper');
 const { deleteFile } = require('../utils/upload');
-const { sendMail } = require('../utils/email');
 
 const all = async (req, res) => {
     let cats = await DB.find().populate({
