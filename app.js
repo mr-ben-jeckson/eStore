@@ -59,6 +59,5 @@ app.use((err, req, res, next) => {
     err.status = err.status || 500;
     res.status(err.status).json({ con: false, msg: err.message });
 });
-
 /* APP DEV */
 app.listen(process.env.PORT, console.log(`API Server Site is running on ${process.env.HOST}:${process.env.PORT}`));
