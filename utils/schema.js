@@ -70,6 +70,17 @@ module.exports = {
             user: Joi.optional()
         })
     },
+    /* Delivery Validation */
+    DeliSchema: {
+        addDeli: Joi.object({
+            name: Joi.string().required(),
+            price: Joi.number().required(),
+            image: Joi.string().required(),
+            duration: Joi.string(),
+            remark: Joi.optional(),
+            user: Joi.optional()
+        })
+    },
     /* MongoDB Id Validation */
     AllSchema: {
         id: Joi.object({

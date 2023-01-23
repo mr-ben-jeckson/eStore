@@ -5,13 +5,13 @@ const path = require('path');
 const pathView = path.resolve(__dirname, '../utils/mail/templates/view');
 const partialsView = path.resolve(__dirname, '../utils/mail/templates/partials');
 module.exports = {
-    sendMail: (value, from, to, sub) => {
+    sendMail: (value, to, sub) => {
         let transporter = nodemailer.createTransport({
             host: process.env.SMTP_HOST,
             port: process.env.SMTP_POST,
             auth: {
                 user: process.env.SMTP_USER,
-                pass: SMTP_PASSWORD
+                pass: process.env.SMTP_PASSWORD
             }
         });
         transporter.use('compile', hbs({
@@ -26,7 +26,7 @@ module.exports = {
             extName: '.handlebars'
         }));
         let mailOptions = {
-            from: from || process.env.EMAIL,
+            from: process.env.EMAIL,
             to: to,
             subject: sub,
             template: 'index',

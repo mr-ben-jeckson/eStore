@@ -43,6 +43,13 @@ app.use('/childcategory', childCatRoute);
 /* Tag Routes */
 const tagRoute = require('./routes/tag');
 app.use('/tag', tagRoute);
+/* Delivery Routes */
+const deliRoute = require('./routes/delivery');
+app.use('/delivery', deliRoute);
+
+/* Test Application */
+const testRoute = require('./routes/test');
+app.use('/test', testRoute);
 
 /* Run Functions  */
 const defaultData = async () => {
