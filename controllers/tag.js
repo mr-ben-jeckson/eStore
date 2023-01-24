@@ -10,6 +10,7 @@ const all = async(req, res) => {
 const add = async(req, res, next) => {
     let validTag = await DB.findOne({ name: req.body.name });
     if(validTag) {
+        deleteFile(req.body.image);
         next(new Error(`${req.body.name} has been used in tag`));
     } else {
         let tag = await new DB(req.body).save();
@@ -29,7 +30,7 @@ const get = async(req, res, next) => {
 const patch = async(req, res, next) => {
     let editTag = await DB.findById(req.params.id);
     if(editTag) {
-        if(req.files && req.files.file) {
+        if(req.body.image) {
             deleteFile(editTag.image);
         }
         await DB.findByIdAndUpdate(editTag._id, req.body);

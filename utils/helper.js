@@ -10,6 +10,9 @@ module.exports = {
     /* Json Formatted Message Function */
     fMsg: (res, msg = "", data = [], status = '' || 200) => res.status(status).json({ con: true, msg, data }),
 
+    /* Making Collection to An Array */
+    makeArray: (data = []) => {return data;},
+
     /* Creating Token */
     makeToken: (payload) => jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: '1h' })
 }

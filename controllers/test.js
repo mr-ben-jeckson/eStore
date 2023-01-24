@@ -1,4 +1,4 @@
-const { sendMail } = require("../utils/email");
+const { sendMail } = require('../utils/email');
 const Helper = require('../utils/helper');
 
 module.exports = {

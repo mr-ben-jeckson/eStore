@@ -46,6 +46,9 @@ app.use('/tag', tagRoute);
 /* Delivery Routes */
 const deliRoute = require('./routes/delivery');
 app.use('/delivery', deliRoute);
+/* Warranty Routes */
+const warrantyRoute = require('./routes/warranty');
+app.use('/warranty', warrantyRoute);
 
 /* Test Application */
 const testRoute = require('./routes/test');

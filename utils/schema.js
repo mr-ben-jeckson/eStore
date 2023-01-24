@@ -81,6 +81,21 @@ module.exports = {
             user: Joi.optional()
         })
     },
+    /* Warranty Validation */
+    WarrantySchema: {
+        addWarranty: Joi.object({
+            name: Joi.string().required(),
+            image: Joi.string().required(),
+            remark: Joi.optional(),
+            user: Joi.optional()
+        }),
+        editWarranty: Joi.object({
+            name: Joi.string().required(),
+            image: Joi.optional(),
+            remark: Joi.optional(),
+            user: Joi.optional()
+        })
+    },
     /* MongoDB Id Validation */
     AllSchema: {
         id: Joi.object({
