@@ -96,6 +96,31 @@ module.exports = {
             user: Joi.optional()
         })
     },
+    /* Product Validation */
+    ProductSchema: {
+        addProduct: Joi.object({
+            name: Joi.string().required(),
+            price: Joi.number().required(),
+            title: Joi.string().required(),
+            brand: Joi.string().required(),
+            cat: Joi.string().regex(/^[0-9a-fA-F]{24}$/),
+            subcatid: Joi.string().regex(/^[0-9a-fA-F]{24}$/),
+            childcat: Joi.string().regex(/^[0-9a-fA-F]{24}$/),
+            tag: Joi.string().regex(/^[0-9a-fA-F]{24}$/),
+            discount: Joi.number().optional(),
+            features: Joi.array().required(),
+            content: Joi.string().required(),
+            detail: Joi.string().required(),
+            status: Joi.number().required(),
+            colors: Joi.array().required(),
+            sizes: Joi.array().required(),
+            rating: Joi.number().optional(),
+            delivery: Joi.array().optional(),
+            warranty: Joi.array().optional(),
+            images: Joi.array().required(),
+            user: Joi.optional()
+        })
+    },
     /* MongoDB Id Validation */
     AllSchema: {
         id: Joi.object({
