@@ -3,7 +3,7 @@ const Helper = require('../utils/helper');
 const { deleteFile } = require('../utils/upload');
 
 const all = async(req, res) => {
-    let products = await DB.find();
+    let products = await DB.find().populate('cat subcatid childcat');
     Helper.fMsg(res, "All Products", products);    
 }
 
@@ -24,6 +24,7 @@ const add = async(req, res, next) => {
         });
         next(new Error(`${req.body.name} has been used in products`));
     } else {
+        req.body['user_id'] = req.user._id;
         let product = await new DB(req.body).save();
         Helper.fMsg(res, "Product was added", product, 201);
     }

@@ -27,15 +27,19 @@ const patchFile = async (req, res, next) => {
 
 /* Saving Mutiple Files on Server Directory */
 const saveFiles = async (req, res, next) => {
-    let filenames = [];
-    let files = req.files.files;
-    files.forEach((file) => {
-        let filename = new Date().valueOf() + '_' + file.name;
-        file.mv(`./storage/${filename}`);
-        filenames.push(filename);
-    })
-    req.body["images"] = filenames.join(",");
-    next();
+    if(req.files && req.files.files) {
+        let filenames = [];
+        let files = req.files.files;
+        files.forEach((file) => {
+            let filename = new Date().valueOf() + '_' + file.name;
+            file.mv(`./storage/${filename}`);
+            filenames.push(filename);
+        })
+        req.body["images"] = filenames;
+        next();
+    } else {
+        next(new Error("Request Files not exist"));
+    }
 }
 
 /* Deleting File on Server Directory */

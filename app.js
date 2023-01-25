@@ -49,7 +49,9 @@ app.use('/delivery', deliRoute);
 /* Warranty Routes */
 const warrantyRoute = require('./routes/warranty');
 app.use('/warranty', warrantyRoute);
-
+/* Product Routes */
+const productRoute = require('./routes/product');
+app.use('/product', productRoute);
 /* Test Application */
 const testRoute = require('./routes/test');
 app.use('/test', testRoute);

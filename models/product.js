@@ -7,7 +7,7 @@ const productSchema = new Schema({
     title: { type: String, required: true },
     brand: { type: String, required: true },
     cat: { type: Schema.Types.ObjectId, 'ref': 'category' },
-    subcat: { type: Schema.Types.ObjectId, 'ref': 'subcategory' },
+    subcatid: { type: Schema.Types.ObjectId, 'ref': 'subcategory' },
     childcat: { type: Schema.Types.ObjectId, 'ref': 'childcategory' },
     tag: { type: Schema.Types.ObjectId, 'ref': 'tag' },
     discount: { type: Number, default: 0},
@@ -21,7 +21,7 @@ const productSchema = new Schema({
     delivery: [{type: Schema.Types.ObjectId, 'ref': 'delivery'}],
     warranty: [{type: Schema.Types.ObjectId, 'ref': 'delivery'}],
     images: { type: Array, required: true},
-    user: { type: Schema.Types.ObjectId, 'ref': 'user' },
+    user_id: { type: Schema.Types.ObjectId, 'ref': 'user' },
     created: { type: Date, default: Date.now },
     updated: { type: Date, default: Date.now }
 });
