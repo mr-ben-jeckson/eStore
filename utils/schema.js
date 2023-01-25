@@ -46,7 +46,8 @@ module.exports = {
     /* Categories Validation  */
     CatSchema: {
         add: Joi.object({
-            name: Joi.string().required()
+            name: Joi.string().required(),
+            image: Joi.string().required()
         }),
         addSub: Joi.object({
             name: Joi.string().required(),
@@ -104,7 +105,7 @@ module.exports = {
             title: Joi.string().required(),
             brand: Joi.string().required(),
             cat: Joi.string().regex(/^[0-9a-fA-F]{24}$/),
-            subcatid: Joi.string().regex(/^[0-9a-fA-F]{24}$/),
+            subcat: Joi.string().regex(/^[0-9a-fA-F]{24}$/),
             childcat: Joi.string().regex(/^[0-9a-fA-F]{24}$/),
             tag: Joi.string().regex(/^[0-9a-fA-F]{24}$/),
             discount: Joi.number().optional(),
@@ -120,13 +121,13 @@ module.exports = {
             images: Joi.array().required(),
             user: Joi.optional()
         }),
-        addProduct: Joi.object({
+        editProduct: Joi.object({
             name: Joi.string().required(),
             price: Joi.number().required(),
             title: Joi.string().required(),
             brand: Joi.string().required(),
             cat: Joi.string().regex(/^[0-9a-fA-F]{24}$/),
-            subcatid: Joi.string().regex(/^[0-9a-fA-F]{24}$/),
+            subcat: Joi.string().regex(/^[0-9a-fA-F]{24}$/),
             childcat: Joi.string().regex(/^[0-9a-fA-F]{24}$/),
             tag: Joi.string().regex(/^[0-9a-fA-F]{24}$/),
             discount: Joi.number().optional(),
@@ -139,7 +140,7 @@ module.exports = {
             rating: Joi.number().optional(),
             delivery: Joi.array().optional(),
             warranty: Joi.array().optional(),
-            images: Joi.array().required(),
+            images: Joi.array().optional(),
             user: Joi.optional()
         })
     },
