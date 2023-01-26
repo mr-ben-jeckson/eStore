@@ -11,8 +11,15 @@ module.exports = {
     fMsg: (res, msg = "", data = [], status = '' || 200) => res.status(status).json({ con: true, msg, data }),
 
     /* Making Collection to An Array */
-    makeArray: (data = []) => {return data;},
+    makeArray: (data = []) => { return data; },
 
     /* Creating Token */
-    makeToken: (payload) => jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: '1h' })
+    makeToken: (payload) => jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: '1h' }),
+
+    /* Sleep */
+    sleep: (ms) => {
+        return new Promise((resolve) => {
+            setTimeout(resolve, ms);
+        });
+    }
 }

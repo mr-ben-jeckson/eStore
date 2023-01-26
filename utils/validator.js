@@ -1,11 +1,21 @@
 const jwt = require('jsonwebtoken');
+const { sleep } = require('./helper');
 const redis = require('./redis');
+const { deleteFile } = require('./upload');
 module.exports = {
     /* Validation for Request Body */
     validateBody: (schema) => {
         return (req, res, next) => {
             let result = schema.validate(req.body);
             if (result.error) {
+                if(req.body.image) {
+                    deleteFile(req.body.image);   
+                }
+                if(req.body.images) {
+                    req.body.images.forEach(async(img) => {
+                        deleteFile(img);
+                    });
+                }
                 next(new Error(result.error.details[0].message));
             } else {
                 next();

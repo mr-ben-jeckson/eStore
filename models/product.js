@@ -35,7 +35,7 @@ productSchema.pre('findOne', async function () {
     this.where({ isDeleted: false });
 });
 
-/* This function can only to manage soft deleted document to restore or parmenet delete */
+/* This function can use only for soft deleted document to restore or parmenet delete */
 productSchema.pre('updateOne', async function () {
     this.where({ isDeleted: true });
 });
