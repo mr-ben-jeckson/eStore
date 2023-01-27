@@ -71,6 +71,10 @@ const defaultData = async () => {
 }
 // defaultData();
 
+/* TASK SCHEDULING */
+const appController = require('./controllers/app');
+appController.jobs();
+
 /* ERROR HANDLING */
 app.use((err, req, res, next) => {
     err.status = err.status || 500;

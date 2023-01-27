@@ -34,7 +34,7 @@ const put = async (req, res, next) => {
     let editProduct = await DB.findById(req.params.id);
     if (editProduct) {
         if (req.body.images) {
-            req.body.images.forEach((img) => {
+            editProduct.images.forEach((img) => {
                 deleteFile(img);
             });
         } else {

@@ -24,7 +24,8 @@ const productSchema = new Schema({
     user_id: { type: Schema.Types.ObjectId, 'ref': 'user' },
     created: { type: Date, default: Date.now },
     updated: { type: Date, default: Date.now },
-    isDeleted: { type: Boolean, default: false, select: false }
+    isDeleted: { type: Boolean, default: false, select: false },
+    __v: { type: Number, select: false }
 });
 
 productSchema.pre('find', async function () {

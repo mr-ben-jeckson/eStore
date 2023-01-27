@@ -43,6 +43,23 @@ const saveFiles = async (req, res, next) => {
     }
 };
 
+/* Edit Files on Server Directory */
+const editFiles = async (req, res, next) => {
+    if (req.files && req.files.files) {
+        let filenames = [];
+        let files = req.files.files;
+        files.forEach((file) => {
+            let filename = new Date().valueOf() + '_' + file.name;
+            file.mv(`./storage/${filename}`);
+            filenames.push(filename);
+        })
+        req.body["images"] = filenames;
+        next();
+    } else {
+        next();
+    }
+};
+
 /* Deleting File on Server Directory */
 const deleteFile = async (filename) => {
     await sleep(5000); // Deleted File After 5 sec (5000 ms) seconds delay 
@@ -53,5 +70,6 @@ module.exports = {
     saveFile,
     patchFile,
     saveFiles,
+    editFiles,
     deleteFile,
 };
