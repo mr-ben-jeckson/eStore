@@ -33,7 +33,8 @@ const search = async (req, res) => {
     if (req.query.cat) searchObj['cat'] = req.query.cat;
     if (req.query.subcat) searchObj['subcat'] = req.query.subcat;
     if (req.query.childcat) searchObj['childcat'] = req.query.childcat;
-    if (req.query.tag) searchObj['tag'] = req.query.tag;   
+    if (req.query.tag) searchObj['tag'] = req.query.tag;
+    if (req.query.color) searchObj['colors'] = { $in: [req.query.color] };
     let products = await DB.find(searchObj).skip(skipProducts).limit(limit);
     Helper.fMsg(res, `Paginated Products, Page = ${page}`, products);
 }

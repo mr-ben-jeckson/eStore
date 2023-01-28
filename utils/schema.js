@@ -151,7 +151,8 @@ module.exports = {
             subcat: Joi.string().regex(/^[0-9a-fA-F]{24}$/),
             childcat: Joi.string().regex(/^[0-9a-fA-F]{24}$/),
             tag: Joi.string().regex(/^[0-9a-fA-F]{24}$/),
-            rating: Joi.number().min(0)
+            rating: Joi.number().min(0),
+            color: Joi.string().regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/)
         })
     },
     /* MongoDB Id Validation */
