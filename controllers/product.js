@@ -2,12 +2,39 @@ const DB = require('../models/product');
 const Helper = require('../utils/helper');
 const { deleteFile } = require('../utils/upload');
 
-const paginate = async(req, res) => {
+const paginate = async (req, res) => {
     let page = Number(req.params.page),
-    limit = Number(process.env.PAGE_LIMIT),
-    showPage = page == 1 ? 0 : page - 1,
-    skipProducts = limit * showPage;
+        limit = Number(process.env.PAGE_LIMIT),
+        showPage = page == 1 ? 0 : page - 1,
+        skipProducts = limit * showPage;
     let products = await DB.find().skip(skipProducts).limit(limit);
+    Helper.fMsg(res, `Paginated Products, Page = ${page}`, products);
+}
+
+const search = async (req, res) => {
+    let page = Number(req.params.page),
+        limit = Number(process.env.PAGE_LIMIT),
+        showPage = page == 1 ? 0 : page - 1,
+        skipProducts = limit * showPage,
+        searchObj = {};
+    // if(req.query.name) searchObj['name'] = new RegExp(req.query.name, 'i'); // By Name Like
+    if (req.query.keywords) {
+        const queryKeywords = new RegExp(req.query.keywords, 'i');
+        searchObj['$or'] = [
+            { name: { $regex: queryKeywords } },
+            { title: { $regex: queryKeywords } },
+            { brand: { $regex: queryKeywords } },
+            { content: { $regex: queryKeywords } },
+            { detail: { $regex: queryKeywords } }
+        ]
+    }
+    if (Number(req.query.min) && Number(req.query.max) && req.query.max > req.query.min)
+        searchObj['price'] = { $gt: `${req.query.min - 1}`, $lt: `${req.query.max + 1}` };
+    if (req.query.cat) searchObj['cat'] = req.query.cat;
+    if (req.query.subcat) searchObj['subcat'] = req.query.subcat;
+    if (req.query.childcat) searchObj['childcat'] = req.query.childcat;
+    if (req.query.tag) searchObj['tag'] = req.query.tag;   
+    let products = await DB.find(searchObj).skip(skipProducts).limit(limit);
     Helper.fMsg(res, `Paginated Products, Page = ${page}`, products);
 }
 
@@ -78,12 +105,12 @@ const restore = async (req, res, next) => {
                 { _id: req.params.id },
                 { isDeleted: false }
             );
-    
+
         } catch (e) {
             throw e;
         }
         let restoreProduct = await DB.findById(req.params.id);
-        if(restoreProduct) {
+        if (restoreProduct) {
             Helper.fMsg(res, `${restoreProduct.name} was removed from products`, restoreProduct);
         } else {
             next(new Error(`Invalid ID : ${req.params.id}, You cannot restore`))
@@ -95,6 +122,7 @@ const restore = async (req, res, next) => {
 
 module.exports = {
     paginate,
+    search,
     add,
     get,
     put,

@@ -34,6 +34,17 @@ module.exports = {
             }
         }
     },
+    /* Validation for Request Query */
+    validateQuery: (schema) => {
+        return (req, res, next) => {
+            let result = schema.validate(req.query);
+            if (result.error) {
+                next(new Error(result.error.details[0].message));
+            } else {
+                next();
+            }
+        }
+    },
     /* Tokenization and Assign Req from Redis */
     validateToken: () => {
         return async (req, res, next) => {

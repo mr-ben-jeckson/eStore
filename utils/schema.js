@@ -142,6 +142,16 @@ module.exports = {
             warranty: Joi.array().items(Joi.string().regex(/^[0-9a-fA-F]{24}$/)).optional(),
             images: Joi.array().optional(),
             user: Joi.optional()
+        }),
+        searchProduct: Joi.object({
+            keywords: Joi.string(),
+            max: Joi.number().min(1),
+            min: Joi.number().less(Joi.ref('max')),
+            cat: Joi.string().regex(/^[0-9a-fA-F]{24}$/),
+            subcat: Joi.string().regex(/^[0-9a-fA-F]{24}$/),
+            childcat: Joi.string().regex(/^[0-9a-fA-F]{24}$/),
+            tag: Joi.string().regex(/^[0-9a-fA-F]{24}$/),
+            rating: Joi.number().min(0)
         })
     },
     /* MongoDB Id Validation */
