@@ -1,5 +1,4 @@
 const jwt = require('jsonwebtoken');
-const { sleep } = require('./helper');
 const redis = require('./redis');
 const { deleteFile } = require('./upload');
 module.exports = {
@@ -27,19 +26,6 @@ module.exports = {
         return (req, res, next) => {
             let obj = {};
             obj[`${name}`] = req.params[`${name}`];
-            let result = schema.validate(obj);
-            if (result.error) {
-                next(new Error(result.error.details[0].message));
-            } else {
-                next();
-            }
-        }
-    },
-    /* Validation for Request Param */
-    validateId: (schema, name, check) => {
-        return (req, res, next) => {
-            let obj = {};
-            obj[`${name}`] = check;
             let result = schema.validate(obj);
             if (result.error) {
                 next(new Error(result.error.details[0].message));

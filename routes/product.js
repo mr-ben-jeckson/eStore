@@ -5,7 +5,7 @@ const { saveFiles, editFiles } = require('../utils/upload');
 const { validateBody, validateParam, hasRole, validateToken } = require('../utils/validator');
 
 router.post('/', [validateToken(), hasRole(['Admin']), validateParam(AllSchema.id, 'id'), saveFiles, validateBody(ProductSchema.addProduct), controller.add])
-    .get('/', controller.all);
+    .get('/collections/:page', [validateParam(AllSchema.page, 'page'), controller.paginate]);
 
 router.route('/:id')
     .get([validateParam(AllSchema.id, 'id')], controller.get)

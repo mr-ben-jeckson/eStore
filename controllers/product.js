@@ -2,9 +2,13 @@ const DB = require('../models/product');
 const Helper = require('../utils/helper');
 const { deleteFile } = require('../utils/upload');
 
-const all = async (req, res) => {
-    let products = await DB.find().populate('cat subcat childcat');
-    Helper.fMsg(res, "All Products", products);
+const paginate = async(req, res) => {
+    let page = Number(req.params.page),
+    limit = Number(process.env.PAGE_LIMIT),
+    showPage = page == 1 ? 0 : page - 1,
+    skipProducts = limit * showPage;
+    let products = await DB.find().skip(skipProducts).limit(limit);
+    Helper.fMsg(res, `Paginated Products, Page = ${page}`, products);
 }
 
 const get = async (req, res, next) => {
@@ -38,8 +42,9 @@ const put = async (req, res, next) => {
                 deleteFile(img);
             });
         } else {
-            req.body['images'] = editProduct.images;
+            req.body.images = editProduct.images;
         }
+        req.body.updated = Date.now();
         await DB.findByIdAndUpdate(editProduct._id, req.body);
         let updateProduct = await DB.findById(editProduct._id);
         Helper.fMsg(res, "Product was updated", updateProduct)
@@ -89,7 +94,7 @@ const restore = async (req, res, next) => {
 }
 
 module.exports = {
-    all,
+    paginate,
     add,
     get,
     put,
