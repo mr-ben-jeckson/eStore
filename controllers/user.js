@@ -23,7 +23,7 @@ const register = async (req, res, next) => {
 
 /* User Authentication or Logging In */
 const login = async (req, res, next) => {
-    let validUser = await DB.findOne({ phone: req.body.phone }).populate('roles permissions');
+    let validUser = await DB.findOne({ email: req.body.email }).populate('roles permissions');
     if (validUser) {
         if (Helper.comparePass(req.body.password, validUser.password)) {
             let user = validUser.toObject();
@@ -37,6 +37,10 @@ const login = async (req, res, next) => {
     } else {
         next(new Error("Creditential does not match in our records"))
     }
+}
+
+const currentUser = async(req, res) => {
+    Helper.fMsg(res, "Current User", req.user);
 }
 
 /* User Adding Roles */
@@ -114,6 +118,7 @@ const removePermission = async (req, res, next) => {
 module.exports = {
     register,
     login,
+    currentUser,
     addRole,
     removeRole,
     addPermission,

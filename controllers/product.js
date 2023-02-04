@@ -1,23 +1,16 @@
+const { string } = require('joi');
 const DB = require('../models/product');
 const Helper = require('../utils/helper');
 const { deleteFile } = require('../utils/upload');
 
-const paginate = async (req, res) => {
-    let page = Number(req.params.page),
-        limit = Number(process.env.PAGE_LIMIT),
-        showPage = page == 1 ? 0 : page - 1,
-        skipProducts = limit * showPage;
-    let products = await DB.find().skip(skipProducts).limit(limit);
-    Helper.fMsg(res, `Paginated Products, Page = ${page}`, products);
-}
-
-const search = async (req, res) => {
-    let page = Number(req.params.page),
-        limit = Number(process.env.PAGE_LIMIT),
+const products = async (req, res) => {
+    let page = req.query.page || Number(process.env.DEFAULT_PAGE),
+        limit = req.query.limit || Number(process.env.PAGE_LIMIT),
         showPage = page == 1 ? 0 : page - 1,
         skipProducts = limit * showPage,
         searchObj = {};
-    // if(req.query.name) searchObj['name'] = new RegExp(req.query.name, 'i'); // By Name Like
+
+    // Search Filter     
     if (req.query.keywords) {
         const queryKeywords = new RegExp(req.query.keywords, 'i');
         searchObj['$or'] = [
@@ -29,13 +22,27 @@ const search = async (req, res) => {
         ]
     }
     if (Number(req.query.min) && Number(req.query.max) && req.query.max > req.query.min)
-        searchObj['price'] = { $gt: `${req.query.min - 1}`, $lt: `${req.query.max + 1}` };
+        searchObj['price'] = { $gte: `${req.query.min}`, $lte: `${req.query.max}` };
     if (req.query.cat) searchObj['cat'] = req.query.cat;
     if (req.query.subcat) searchObj['subcat'] = req.query.subcat;
     if (req.query.childcat) searchObj['childcat'] = req.query.childcat;
     if (req.query.tag) searchObj['tag'] = req.query.tag;
     if (req.query.color) searchObj['colors'] = { $in: [req.query.color] };
-    let products = await DB.find(searchObj).skip(skipProducts).limit(limit);
+    if (req.query.rating) searchObj['rating'] = req.query.rating;
+
+    // Month and Year Option Query
+    // if (req.query.year) searchObj['$expr'] = { '$eq': [{ '$year': '$created' }, req.query.year] };
+    // if (req.query.month) searchObj['$expr'] = { '$eq': [{ '$month': '$created' }, req.query.month] };
+
+    // Date Range
+    if (req.query.startDate && req.query.endDate) searchObj['created'] = {
+        $gte: new Date(new Date(req.query.startDate).setUTCHours(24, 0, 0, 0)).toISOString(),
+        $lte: new Date(new Date(req.query.endDate).setUTCHours(47, 59, 59, 999)).toISOString()
+    };
+    // Sorting
+    let sortBy = "-created";
+    if (req.query.sorts) sortBy = req.query.sorts.split(",").join(" ");
+    let products = await DB.find(searchObj).skip(skipProducts).sort(sortBy).limit(limit);
     Helper.fMsg(res, `Paginated Products, Page = ${page}`, products);
 }
 
@@ -122,8 +129,7 @@ const restore = async (req, res, next) => {
 }
 
 module.exports = {
-    paginate,
-    search,
+    products,
     add,
     get,
     put,

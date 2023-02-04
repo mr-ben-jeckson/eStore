@@ -1,4 +1,4 @@
-const Joi = require('joi');
+const Joi = require('joi').extend(require('@joi/date'));
 module.exports = {
     /* User Validation */
     UserSchema: {
@@ -11,7 +11,7 @@ module.exports = {
         }),
         /* Login Validator */
         login: Joi.object({
-            phone: Joi.string().min(7).max(11).required(),
+            email: Joi.string().email().required(),
             password: Joi.string().min(8).required()
         }),
         /* Adding Role Validator */
@@ -145,23 +145,25 @@ module.exports = {
         }),
         searchProduct: Joi.object({
             keywords: Joi.string(),
-            max: Joi.number().min(1),
             min: Joi.number().less(Joi.ref('max')),
+            max: Joi.number().min(1),
             cat: Joi.string().regex(/^[0-9a-fA-F]{24}$/),
             subcat: Joi.string().regex(/^[0-9a-fA-F]{24}$/),
             childcat: Joi.string().regex(/^[0-9a-fA-F]{24}$/),
             tag: Joi.string().regex(/^[0-9a-fA-F]{24}$/),
             rating: Joi.number().min(0),
-            color: Joi.string().regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/)
-        })
+            color: Joi.string().regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/),
+            page: Joi.number().min(1),
+            limit: Joi.number().min(1),
+            sorts: Joi.string().regex(/^\S+$/),
+            startDate: Joi.date().format(['YYYY/MM/DD', 'DD-MMM-YYYY']).less(Joi.ref('endDate')),
+            endDate: Joi.date().format(['YYYY/MM/DD', 'DD-MMM-YYYY']),
+        }).with('endDate', 'startDate').with('max', 'min')
     },
     /* MongoDB Id Validation */
     AllSchema: {
         id: Joi.object({
             id: Joi.string().regex(/^[0-9a-fA-F]{24}$/)
-        }),
-        page: Joi.object({
-            page: Joi.number().min(1)
         })
     }
 }

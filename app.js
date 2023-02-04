@@ -17,6 +17,12 @@ mongoose.connect(`mongodb://127.0.0.1:27017/${process.env.DB_NAME}`);
 app.use(express.json());
 /* APP uses File Upload */
 app.use(fileupload());
+
+/* APP use CORS */
+const cors = require('cors');
+app.use(cors({
+    origin: process.env.FRONTEND_HTTP
+}));
 /* For Public Storage */
 const path = require("path");
 app.use('/storage', express.static(path.join(__dirname, 'storage')));
