@@ -160,6 +160,17 @@ module.exports = {
             endDate: Joi.date().format(['YYYY/MM/DD', 'DD-MMM-YYYY']),
         }).with('endDate', 'startDate').with('max', 'min')
     },
+    /* Order Validation */
+    OrderSchema: {
+        addOrder: Joi.object({
+            items: Joi.array().items(Joi.object({
+                id: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required(),
+                quantity: Joi.number().min(1),
+                size: Joi.string(),
+                color: Joi.string().regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/),
+            })).required()
+        })
+    },
     /* MongoDB Id Validation */
     AllSchema: {
         id: Joi.object({

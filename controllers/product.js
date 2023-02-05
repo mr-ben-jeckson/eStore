@@ -1,4 +1,3 @@
-const { string } = require('joi');
 const DB = require('../models/product');
 const Helper = require('../utils/helper');
 const { deleteFile } = require('../utils/upload');
@@ -34,7 +33,7 @@ const products = async (req, res) => {
     // if (req.query.year) searchObj['$expr'] = { '$eq': [{ '$year': '$created' }, req.query.year] };
     // if (req.query.month) searchObj['$expr'] = { '$eq': [{ '$month': '$created' }, req.query.month] };
 
-    // Date Range
+    // Date Range Filter
     if (req.query.startDate && req.query.endDate) searchObj['created'] = {
         $gte: new Date(new Date(req.query.startDate).setUTCHours(24, 0, 0, 0)).toISOString(),
         $lte: new Date(new Date(req.query.endDate).setUTCHours(47, 59, 59, 999)).toISOString()
