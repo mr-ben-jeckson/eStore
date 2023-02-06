@@ -7,22 +7,17 @@ app = express();
 
 /* Declared File Upload */
 const fileupload = require('express-fileupload');
-
-/* Declared Mongoose and MongoDB Set Up */
-const mongoose = require('mongoose');
-mongoose.set('strictQuery', true);
-mongoose.connect(`mongodb://127.0.0.1:27017/${process.env.DB_NAME}`);
-
 /* APP uses Json */
 app.use(express.json());
 /* APP uses File Upload */
 app.use(fileupload());
 
-/* APP use CORS */
+/* APP use CORS & Helmet */
 const cors = require('cors');
-app.use(cors({
-    origin: process.env.FRONTEND_HTTP
-}));
+const helmet = require('helmet');
+app.use(helmet());
+app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
+app.use(cors());
 /* For Public Storage */
 const path = require("path");
 app.use('/storage', express.static(path.join(__dirname, 'storage')));
@@ -91,5 +86,15 @@ app.use((err, req, res, next) => {
     err.status = err.status || 500;
     res.status(err.status).json({ con: false, msg: err.message });
 });
+
 /* APP DEV */
-app.listen(process.env.PORT, console.log(`API Server Site is running on ${process.env.HOST}:${process.env.PORT}`));
+/* Declared Mongoose and MongoDB Set Up */
+const mongoose = require('mongoose');
+const PORT = process.env.PORT || 5000;
+mongoose.set('strictQuery', true);
+mongoose.connect(process.env.MONGO_URL, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+}).then(() => {
+    app.listen(PORT, () => console.log(`REST API server is running on ${process.env.HOST}:${PORT}`));
+}).catch((error) => console.log(`${error} : Did not connect`));
