@@ -1,6 +1,7 @@
 const DB = require('../models/user');
 const roleDB = require('../models/role');
 const permitDB = require('../models/permission');
+const addressDB = require('../models/address');
 const Helper = require('../utils/helper');
 const redis = require('../utils/redis');
 
@@ -23,7 +24,13 @@ const register = async (req, res, next) => {
 
 /* User Authentication or Logging In */
 const login = async (req, res, next) => {
-    let validUser = await DB.findOne({ email: req.body.email }).populate('roles permissions');
+    let findObj = {}
+    if (req.body.phone) {
+        findObj['phone'] = req.body.phone;
+    } else {
+        findObj['email'] = req.body.email;
+    }
+    let validUser = await DB.findOne(findObj).populate('roles permissions');
     if (validUser) {
         if (Helper.comparePass(req.body.password, validUser.password)) {
             let user = validUser.toObject();
@@ -39,7 +46,7 @@ const login = async (req, res, next) => {
     }
 }
 
-const currentUser = async(req, res) => {
+const currentUser = async (req, res) => {
     Helper.fMsg(res, "Current User", req.user);
 }
 
@@ -115,6 +122,89 @@ const removePermission = async (req, res, next) => {
     }
 }
 
+/* Adding Address */
+const addAddress = async (req, res, next) => {
+    if (req.body.default === 1) {
+        await addressDB.updateMany({
+        $and: [
+            { user: req.user._id },
+            { default: true}
+        ]},
+            { default: false });
+    }
+    req.body['user'] = req.user._id;
+    let newAddress = await new addressDB(req.body).save();
+    Helper.fMsg(res, "Address has been added", newAddress, 201);
+}
+
+const getMyAddress = async (req, res) => {
+    let address = await addressDB.find({ user: req.user._id });
+    Helper.fMsg(res, "My Shipping Addresses", address);
+}
+
+const viewMyAddress = async(req, res, next) => {
+    let address = await addressDB.findOne({
+        $and: [
+            { user: req.user._id },
+            { _id: req.params.id }
+        ]
+    })
+    if(address) {
+        Helper.fMsg(res, "My Address", address);
+    } else {
+        next(new Error("Failed, You cannot view your address"));
+    }
+}
+
+const editMyAddress = async (req, res, next) => {
+    let myAddress = await addressDB.findOne({
+        $and: [
+            { user: req.user._id },
+            { _id: req.params.id }
+        ]
+    });
+    if(myAddress) {
+        req.body['updated'] = Date.now();
+        req.body['user'] = req.user._id;
+        if (req.body.default === 1) {
+            await addressDB.updateMany({
+            $and: [
+                { user: req.user._id },
+                { default: true}
+            ]},
+                { default: false });
+        }
+        if (req.body.default === 0) {
+            let oneAddress = await addressDB.find({ user: req.user._id }).count() === 1 ? true : false;
+            if(oneAddress) {
+                next(new Error("You have to set primary meanwhile you only have one address"));
+                return;
+            }
+        }
+        await addressDB.findByIdAndUpdate(myAddress._id, req.body);
+        let updateAddress = await addressDB.findById(req.params.id);
+        Helper.fMsg(res, "Shipping Address Updated", updateAddress);
+    } else {
+        next(new Error("Invalid ID or You cannot have access to edit"))
+    }
+}
+
+const deleteMyAddress = async(req, res, next) => {
+    let deleteAddress = await addressDB.findOne({
+        $and: [
+            { user: req.user._id },
+            { _id: req.params.id },
+            { default: false }
+        ]
+    })
+    if(deleteAddress) {
+        await addressDB.findByIdAndDelete(deleteAddress._id);
+        Helper.fMsg(res, "Address was successfully removed");
+    } else {
+        next(new Error("Failed! You cannot delete"));
+    }
+}
+
 module.exports = {
     register,
     login,
@@ -122,5 +212,10 @@ module.exports = {
     addRole,
     removeRole,
     addPermission,
-    removePermission
+    removePermission,
+    addAddress,
+    getMyAddress,
+    viewMyAddress,
+    editMyAddress,
+    deleteMyAddress
 }

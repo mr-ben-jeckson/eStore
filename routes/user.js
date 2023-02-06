@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const controller = require('../controllers/user');
-const { UserSchema } = require('../utils/schema');
+const { UserSchema, AddressSchema } = require('../utils/schema');
 const { validateBody, validateToken, validateRole } = require('../utils/validator');
 
 router.get('/', controller.currentUser);
@@ -14,4 +14,11 @@ router.post('/remove-role', [validateToken(), validateRole('Super Admin'), valid
 /* Add or Remove Permissions of User */
 router.post('/add-permission', [validateToken(), validateRole('Super Admin'), validateBody(UserSchema.addPermission), controller.addPermission]);
 router.post('/remove-permission', [validateToken(), validateRole('Super Admin'), validateBody(UserSchema.addPermission), controller.removePermission]);
+/* Add, Delete or Edit Address */
+router.post('/add-address', [validateToken(), validateBody(AddressSchema.addAddress), controller.addAddress]);
+router.get('/address', [validateToken(), controller.getMyAddress]);
+router.route('/address/:id')
+    .get([validateToken(), controller.viewMyAddress])
+    .put([validateToken(), validateBody(AddressSchema.addAddress), controller.editMyAddress])
+    .delete([validateToken(), controller.deleteMyAddress]);
 module.exports = router;

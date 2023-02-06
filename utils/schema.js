@@ -11,9 +11,10 @@ module.exports = {
         }),
         /* Login Validator */
         login: Joi.object({
-            email: Joi.string().email().required(),
+            email: Joi.string().email(),
+            phone: Joi.string().min(7).max(11),
             password: Joi.string().min(8).required()
-        }),
+        }).xor('email', 'phone'),
         /* Adding Role Validator */
         addRole: Joi.object({
             userId: Joi.string().regex(/^[0-9a-fA-F]{24}$/),
@@ -169,6 +170,19 @@ module.exports = {
                 size: Joi.string(),
                 color: Joi.string().regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/),
             })).required()
+        })
+    },
+    /* Shipping Address Schema */
+    AddressSchema: {
+        addAddress: Joi.object({
+            name: Joi.string().required(),
+            city: Joi.string().required(),
+            state: Joi.string().required(),
+            country: Joi.string().required(),
+            location: Joi.string().required(),
+            address: Joi.string().required(),
+            default: Joi.number().min(0).less(2),
+            user: Joi.optional()
         })
     },
     /* MongoDB Id Validation */
