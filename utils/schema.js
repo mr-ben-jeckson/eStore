@@ -185,6 +185,15 @@ module.exports = {
             user: Joi.optional()
         })
     },
+    /* Payment Options Schema */
+    PaySchema: {
+        addPay: Joi.object({
+            name: Joi.string().required(),
+            account: Joi.string().required(),
+            number: Joi.string().required(),
+            type: Joi.string().valid("MM", "MB").required(),
+        })
+    },
     /* MongoDB Id Validation */
     AllSchema: {
         id: Joi.object({

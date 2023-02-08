@@ -8,6 +8,8 @@ const orderSchema = new Schema({
     total: { type: Number, required: true},
     user: { type: Schema.Types.ObjectId, 'ref': 'user'},
     status: { type: String, enum: ["PENDING", "ACCEPT", "COMPLETED"], default: "PENDING"},
+    payment: { type: Schema.Types.ObjectId, 'ref': 'payment'},
+    shippingto: { type: Schema.Types.ObjectId, 'ref': 'address'},
     created: { type: Date, default: Date.now },
     updated: { type: Date, default: Date.now }
 });
