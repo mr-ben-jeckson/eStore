@@ -169,7 +169,9 @@ module.exports = {
                 quantity: Joi.number().min(1),
                 size: Joi.string(),
                 color: Joi.string().regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/),
-            })).required()
+            })).required(),
+            address_id: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required(),
+            pay_id: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required(),
         })
     },
     /* Shipping Address Schema */

@@ -61,7 +61,7 @@ const orderRoute = require('./routes/order');
 app.use('/order', orderRoute);
 /* Payment Routes */
 const paymentRoute = require('./routes/payment');
-app.use('payment', paymentRoute);
+app.use('/payment', paymentRoute);
 /* Test Application */
 const testRoute = require('./routes/test');
 app.use('/test', testRoute);

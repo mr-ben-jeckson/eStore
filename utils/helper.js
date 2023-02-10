@@ -14,7 +14,7 @@ module.exports = {
     makeArray: (data = []) => { return data; },
 
     /* Creating Token */
-    makeToken: (payload) => jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: '1h' }),
+    makeToken: (payload) => jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: '6h' }),
 
     /* Sleep */
     sleep: (ms) => {

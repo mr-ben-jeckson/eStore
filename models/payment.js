@@ -9,7 +9,8 @@ const paymentSchema = new Schema({
     type: { type: String, enum: ["MM", "MB", "COD"] }, // MM = Mobile Money like Kpay or Wave, MB = Mobile Banking, COD = Cash on Delivery Default
     created: { type: Date, default: Date.now },
     updated: { type: Date, default: Date.now },
-    isDeleted: { type: Boolean, select: false, default: false }
+    isDeleted: { type: Boolean, select: false, default: false },
+    __v: { type: Number, select: false },
 });
 
 paymentSchema.pre('find', async function () {

@@ -9,9 +9,10 @@ const orderSchema = new Schema({
     user: { type: Schema.Types.ObjectId, 'ref': 'user'},
     status: { type: String, enum: ["PENDING", "ACCEPT", "COMPLETED"], default: "PENDING"},
     payment: { type: Schema.Types.ObjectId, 'ref': 'payment'},
-    shippingto: { type: Schema.Types.ObjectId, 'ref': 'address'},
+    address: { type: Schema.Types.ObjectId, 'ref': 'address'},
     created: { type: Date, default: Date.now },
-    updated: { type: Date, default: Date.now }
+    updated: { type: Date, default: Date.now },
+    __v: { type: Number, select: false },
 });
 
 const order = mongoose.model('order', orderSchema);
