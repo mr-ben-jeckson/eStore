@@ -62,6 +62,9 @@ app.use('/order', orderRoute);
 /* Payment Routes */
 const paymentRoute = require('./routes/payment');
 app.use('/payment', paymentRoute);
+/* Coupon Routes */
+const couponRoute = require('./routes/coupon');
+app.use('/coupon', couponRoute);
 /* Test Application */
 const testRoute = require('./routes/test');
 app.use('/test', testRoute);

@@ -6,7 +6,7 @@ const add = async (req, res, next) => {
     if (codeExist) {
         next(new Error("Promo Code has been used"));
     } else {
-        let coupon = await new DB(req.body);
+        let coupon = await new DB(req.body).save();
         Helper.fMsg(res, "Coupon was added", coupon);
     }
 }
@@ -27,7 +27,7 @@ const getCoupon = async (req, res, next) => {
         ];
     }
     if (req.query.expired) {
-        if (req.query.expired === true) searchObj['expired'] = { $gte: Date.now() };
+        if (req.query.expired == 0) searchObj['expired'] = { $gte: Date.now() };
         else searchObj['expired'] = { $lte: Date.now() };
     }
     if (req.query.type) searchObj['type'] = req.query.type;
@@ -45,25 +45,27 @@ const getCoupon = async (req, res, next) => {
 }
 
 const postPublic = async (req, res, next) => {
-    let coupon = await DB.findOne([
-        { code: req.body.code },
-        { allow: { $gt: 0 }},
-        { status: true },
-        { expried: { $lt: Date.now() }}
-    ]);
-    if(coupon) Helper.fMsg(res, "Your Available Coupon", coupon);
-    else next(new Error("Invalid Coupon or Expried Coupon"));
+    let coupon = await DB.findOne({
+        $and: [
+            { code: req.body.code },
+            { allow: { $gt: 0 } },
+            { status: true },
+            { expried: { $lt: Date.now() } }
+        ]
+    });
+    if (coupon) Helper.fMsg(res, "Your Available Coupon", coupon);
+    else next(new Error("Invalid Coupon or Expired Coupon"));
 }
 
 const get = async (req, res, next) => {
     let coupon = await DB.findById(req.params.id);
-    if(coupon) Helper.fMsg(res, "Single Coupon", coupon);
+    if (coupon) Helper.fMsg(res, "Single Coupon", coupon);
     else next(new Error(`Invalid ID: ${req.params.id}, You cannot get`));
 }
 
 const put = async (req, res, next) => {
     let coupon = await DB.findById(req.params.id);
-    if(coupon) {
+    if (coupon) {
         req.body.updated = Date.now();
         await DB.findByIdAndUpdate(coupon._id, req.body);
         let newCoupon = await DB.findById(coupon._id);
@@ -75,7 +77,7 @@ const put = async (req, res, next) => {
 
 const softDrop = async (req, res, next) => {
     let delCoupon = await DB.findById(req.params.id);
-    if(delCoupon) {
+    if (delCoupon) {
         await DB.findByIdAndUpdate(
             delCoupon._id,
             { isDeleted: true }

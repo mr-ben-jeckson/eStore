@@ -1,4 +1,5 @@
-const Joi = require('joi').extend(require('@joi/date'));
+const Joi = require('joi')
+    .extend(require('@joi/date'));
 module.exports = {
     /* User Validation */
     UserSchema: {
@@ -135,7 +136,7 @@ module.exports = {
             features: Joi.array().required(),
             content: Joi.string().required(),
             detail: Joi.string().required(),
-            status: Joi.number().min(0).less(2).required(),
+            status: Joi.number().valid(0, 1).required(),
             colors: Joi.array().items(Joi.string().regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/)).required(),
             sizes: Joi.array().required(),
             rating: Joi.number().min(0).less(6).optional(),
@@ -183,7 +184,7 @@ module.exports = {
             country: Joi.string().required(),
             location: Joi.string().required(),
             address: Joi.string().required(),
-            default: Joi.number().min(0).less(2),
+            default: Joi.number().valid(0, 1),
             user: Joi.optional()
         })
     },
@@ -194,6 +195,32 @@ module.exports = {
             account: Joi.string().required(),
             number: Joi.string().required(),
             type: Joi.string().valid("MM", "MB").required(),
+        })
+    },
+    /* Coupon Schema */
+    CouponScheam: {
+        addCoupon: Joi.object({
+            name: Joi.string().required(),
+            code: Joi.string().regex(/^\S+$/).max(10).required(),
+            allow: Joi.number().greater(0).required(),
+            type: Joi.string().valid("cashback", "percentage").required(),
+            about: Joi.string().required(),
+            status: Joi.number().valid(0, 1).required(),
+            discount: Joi.number().greater(0).required(),
+            expired: Joi.date().format(['YYYY/MM/DD', 'DD-MMM-YYYY']).required()
+        }),
+        searchCoupon: Joi.object({
+            keywords: Joi.string(),
+            type: Joi.string().valid("cashback", "percentage"),
+            page: Joi.number().greater(0),
+            limit: Joi.number().greater(0),
+            sorts: Joi.string().regex(/^\S+$/),
+            startDate: Joi.date().format(['YYYY/MM/DD', 'DD-MMM-YYYY']).less(Joi.ref('endDate')),
+            endDate: Joi.date().format(['YYYY/MM/DD', 'DD-MMM-YYYY']),
+            expired: Joi.number().valid(0, 1)
+        }).with('endDate', 'startDate'),
+        activateCoupon: Joi.object({
+            code: Joi.string().regex(/^\S+$/).max(10).required(),
         })
     },
     /* MongoDB Id Validation */
