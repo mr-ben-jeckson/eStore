@@ -25,6 +25,7 @@ const productSchema = new Schema({
     created: { type: Date, default: Date.now },
     updated: { type: Date, default: Date.now },
     isDeleted: { type: Boolean, default: false, select: false },
+    deletedAt: { type: Date },
     __v: { type: Number, select: false }
 });
 
@@ -36,10 +37,11 @@ productSchema.pre('findOne', async function () {
     this.where({ isDeleted: false });
 });
 
-/* This function can use only for soft deleted document to restore or parmenet delete */
-productSchema.pre('updateOne', async function () {
-    this.where({ isDeleted: true });
-});
+productSchema.methods.softDelete = async function () {
+    this.isDeleted = true;
+    this.deletedAt = Date.now();
+    return await this.save();
+}
 
 const product = mongoose.model('product', productSchema);
 module.exports = product;

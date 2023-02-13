@@ -95,9 +95,7 @@ const put = async (req, res, next) => {
 const drop = async (req, res, next) => {
     let delProduct = await DB.findById(req.params.id);
     if (delProduct) {
-        await DB.findByIdAndUpdate(delProduct._id, {
-            isDeleted: true
-        });
+        await delProduct.softDelete();
         Helper.fMsg(res, `${delProduct.name} was removed from products`);
     } else {
         next(new Error(`Invalid ID : ${req.params.id}, You cannot delete`))
@@ -118,7 +116,7 @@ const restore = async (req, res, next) => {
         }
         let restoreProduct = await DB.findById(req.params.id);
         if (restoreProduct) {
-            Helper.fMsg(res, `${restoreProduct.name} was removed from products`, restoreProduct);
+            Helper.fMsg(res, `${restoreProduct.name} was restored to products`, restoreProduct);
         } else {
             next(new Error(`Invalid ID : ${req.params.id}, You cannot restore`))
         }
