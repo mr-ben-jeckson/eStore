@@ -3,7 +3,8 @@ const controller = require('../controllers/user');
 const { UserSchema, AddressSchema } = require('../utils/schema');
 const { validateBody, validateToken, validateRole } = require('../utils/validator');
 
-router.get('/', controller.currentUser);
+router.get('/', [validateToken(), controller.currentUser]);
+router.post('/logout', [validateToken(), controller.logout]);
 /* Registration Route */
 router.post('/register', [validateBody(UserSchema.register), controller.register]);
 /* Login Route */

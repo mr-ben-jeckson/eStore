@@ -78,10 +78,7 @@ const put = async (req, res, next) => {
 const softDrop = async (req, res, next) => {
     let delCoupon = await DB.findById(req.params.id);
     if (delCoupon) {
-        await DB.findByIdAndUpdate(
-            delCoupon._id,
-            { isDeleted: true }
-        );
+        await delCoupon.softDelete();
         Helper.fMsg(res, "coupon was deleted");
     } else {
         next(new Error(`Invalid or Dropped ID : ${req.params.id}, You cannot delete`));

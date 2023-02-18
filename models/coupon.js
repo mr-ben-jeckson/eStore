@@ -13,7 +13,8 @@ const couponSchema = new Schema({
     expired: { type: Date, required: true },
     created: { type: Date, default: Date.now },
     updated: { type: Date, default: Date.now },
-    isDeleted: { type: Boolean, default: false, select: false },
+    isDeleted: { type: Boolean, default: false },
+    deletedAt: { type: Date },
     __v: { type: Number, select: false }
 });
 
@@ -25,10 +26,11 @@ couponSchema.pre('findOne', async function () {
     this.where({ isDeleted: false });
 });
 
-/* This function can use only for soft deleted document to restore or parmenet delete */
-couponSchema.pre('updateOne', async function () {
-    this.where({ isDeleted: true });
-});
+couponSchema.methods.softDelete = async function() {
+    this.isDeleted = true;
+    this.deletedAt = Date.now();
+    return await this.save();
+}
 
 const coupon = mongoose.model('coupon', couponSchema);
 module.exports = coupon;

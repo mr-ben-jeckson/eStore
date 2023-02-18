@@ -173,6 +173,7 @@ module.exports = {
             })).required(),
             address_id: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required(),
             pay_id: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required(),
+            coupon_id: Joi.string().regex(/^[0-9a-fA-F]{24}$/),
         })
     },
     /* Shipping Address Schema */
@@ -217,7 +218,7 @@ module.exports = {
             sorts: Joi.string().regex(/^\S+$/),
             startDate: Joi.date().format(['YYYY/MM/DD', 'DD-MMM-YYYY']).less(Joi.ref('endDate')),
             endDate: Joi.date().format(['YYYY/MM/DD', 'DD-MMM-YYYY']),
-            expired: Joi.number().valid(0, 1)
+            expired: Joi.number().valid(0, 1),
         }).with('endDate', 'startDate'),
         activateCoupon: Joi.object({
             code: Joi.string().regex(/^\S+$/).max(10).required(),

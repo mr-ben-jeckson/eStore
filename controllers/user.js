@@ -4,6 +4,7 @@ const permitDB = require('../models/permission');
 const addressDB = require('../models/address');
 const Helper = require('../utils/helper');
 const redis = require('../utils/redis');
+const jwt = require('jsonwebtoken');
 
 /* User Registration and Unique Checking */
 const register = async (req, res, next) => {
@@ -47,7 +48,13 @@ const login = async (req, res, next) => {
 }
 
 const currentUser = async (req, res) => {
-    Helper.fMsg(res, "Current User", req.user);
+    let token = req.headers.authorization.split(" ")[1],
+        currentUser = jwt.decode(token, process.env.SECRET_KEY);
+    Helper.fMsg(res, "Current User", currentUser);
+}
+
+const logout = async(req, res) => {
+    Helper.fMsg(res, "Logged Out");
 }
 
 /* User Adding Roles */
@@ -209,6 +216,7 @@ module.exports = {
     register,
     login,
     currentUser,
+    logout,
     addRole,
     removeRole,
     addPermission,
