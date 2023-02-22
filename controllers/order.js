@@ -6,6 +6,7 @@ const payDB = require('../models/payment');
 const couponDB = require('../models/coupon');
 const itemDB = require('../models/item');
 const Helper = require('../utils/helper');
+const { sendMail } = require('../utils/email');
 
 const add = async (req, res, next) => {
     let address = await addressDB.findOne({
@@ -74,8 +75,11 @@ const add = async (req, res, next) => {
     saveOrder.count = items.length;
     if (hasPromo) {
         saveOrder.coupon = hasPromo._id;
-        hasPromo.type === 'percentage' ? saveOrder.total = grandTotal * ((100 - hasPromo.discount) / 100) :
+        if(hasPromo.type === 'percentage') {
+            saveOrder.total = grandTotal * ((100 - hasPromo.discount) / 100)
+        } else {
             saveOrder.total = grandTotal - hasPromo.discount;
+        }
         saveOrder.discounted = grandTotal - saveOrder.total;
         await couponDB.findByIdAndUpdate(hasPromo._id, {
             allow: hasPromo.allow - 1
@@ -86,10 +90,48 @@ const add = async (req, res, next) => {
     saveOrder.user = user._id;
     saveOrder.address = address._id;
     saveOrder.payment = payment._id;
-    let newOrder = await saveOrder.save();
-    Helper.fMsg(res, "Order Accepted", newOrder, 201);
+    await saveOrder.save();
+    let newOrder = await DB.findById(saveOrder._id).populate('address user payment').populate({
+        path: 'item',
+        populate: {
+            path: 'product',
+            model: 'product'
+        }
+    });
+    let payload = {};
+    payload['to'] = newOrder.user.email;
+    payload['sub'] = "Estore Order Confirmation"
+    payload['data'] = {
+        _id: newOrder._id,
+        name: newOrder.user.name,
+        number: newOrder.number,
+        items: newOrder.item.map(item => ({
+            product_id: item.product.id,
+            name: item.name,
+            status: item.status,
+            img: process.env.IMG_PATH+'/'+item.product.images[0],
+            size: item.size,
+            color: item.color,
+            count: item.count,
+            price: item.price,
+            total: item.total
+        })),
+        payment: newOrder.payment.name,
+        top: newOrder.count,
+        address: newOrder.address.address+', '+newOrder.address.city+', '+newOrder.address.state+', '+newOrder.address.country,
+        total: newOrder.total,
+        discount: newOrder.discounted,
+        status: newOrder.status,
+    }
+    sendMail(payload); // Mailing Function
+    Helper.fMsg(res, "Order Accepted", saveOrder, 201);
+}
+
+const getOrders = async(req, res, next) => {
+
 }
 
 module.exports = {
-    add
+    add,
+    getOrders
 }

@@ -18,6 +18,10 @@ const helmet = require('helmet');
 app.use(helmet());
 app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 app.use(cors());
+/* Socket IO Set up */
+const http = require('http'),
+    server = http.createServer(app),
+    io = require('socket.io')(server);
 /* For Public Storage */
 const path = require("path");
 app.use('/storage', express.static(path.join(__dirname, 'storage')));
@@ -82,6 +86,11 @@ const defaultData = async () => {
     // await migration.backup(); 
 }
 // defaultData();
+const chatController = require('./controllers/chat');
+/* Chat */
+io.of('chat').use(chatController.chatToken).on('connection', socket => {
+    console.log(socket.userPayload)
+});
 
 /* TASK SCHEDULING */
 const appController = require('./controllers/app');
@@ -102,5 +111,5 @@ mongoose.connect(process.env.MONGO_URL, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 }).then(() => {
-    app.listen(PORT, () => console.log(`REST API server is running on ${process.env.HOST}:${PORT}`));
+    server.listen(PORT, () => console.log(`REST API server is running on ${process.env.HOST}:${PORT}`));
 }).catch((error) => console.log(`${error} : Did not connect`));

@@ -5,7 +5,7 @@ const path = require('path');
 const pathView = path.resolve(__dirname, '../utils/mail/templates/view');
 const partialsView = path.resolve(__dirname, '../utils/mail/templates/partials');
 module.exports = {
-    sendMail: (value, to, sub) => {
+    sendMail: (payload) => {
         let transporter = nodemailer.createTransport({
             host: process.env.SMTP_HOST,
             port: process.env.SMTP_POST,
@@ -27,11 +27,11 @@ module.exports = {
         }));
         let mailOptions = {
             from: process.env.EMAIL,
-            to: to,
-            subject: sub,
+            to: payload.to,
+            subject: payload.sub,
             template: 'index',
             context: {
-                data: value,
+                data: payload.data,
             }
         };
         transporter.sendMail(mailOptions, function (error, info) {

@@ -48,12 +48,27 @@ const login = async (req, res, next) => {
 }
 
 const currentUser = async (req, res) => {
-    let token = req.headers.authorization.split(" ")[1],
-        currentUser = jwt.decode(token, process.env.SECRET_KEY);
+    let token = req.headers.authorization.split(" ")[1];
+    if(token) {
+        let decoded = jwt.verify(token, process.env.SECRET_KEY);
+        if(decoded) {
+            let user = await redis.get(decoded._id);
+            if(user) {
+                CurrentUser = user;
+            } else {
+                next(new Error("Tokenization Error"));
+            }
+        } else {
+            next(new Error("Token cannot be verified"));
+        }
+    } else {
+        next(new Error("Tokenization Error"));
+    }
     Helper.fMsg(res, "Current User", currentUser);
 }
 
 const logout = async(req, res) => {
+    redis.drop(req.user._id);
     Helper.fMsg(res, "Logged Out");
 }
 
