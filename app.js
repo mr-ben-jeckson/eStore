@@ -88,9 +88,7 @@ const defaultData = async () => {
 // defaultData();
 const chatController = require('./controllers/chat');
 /* Chat */
-io.of('chat').use(chatController.chatToken).on('connection', socket => {
-    console.log(socket.userPayload)
-});
+io.of('chat').use(chatController.chatToken).on('connection', socket => chatController.initialize(io, socket));
 
 /* TASK SCHEDULING */
 const appController = require('./controllers/app');

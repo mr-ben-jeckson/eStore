@@ -54,7 +54,8 @@ const currentUser = async (req, res) => {
         if(decoded) {
             let user = await redis.get(decoded._id);
             if(user) {
-                CurrentUser = user;
+                let currentUser = user;
+                Helper.fMsg(res, "Current User", currentUser);
             } else {
                 next(new Error("Tokenization Error"));
             }
@@ -64,7 +65,6 @@ const currentUser = async (req, res) => {
     } else {
         next(new Error("Tokenization Error"));
     }
-    Helper.fMsg(res, "Current User", currentUser);
 }
 
 const logout = async(req, res) => {
