@@ -86,7 +86,6 @@ const defaultData = async () => {
     // await migration.backup(); 
 }
 defaultData();
-
 const chatController = require('./controllers/chat');
 /* Chat */
 io.of('chat').use(chatController.chatToken).on('connection', socket => chatController.initialize(io, socket));
