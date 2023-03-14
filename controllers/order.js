@@ -109,7 +109,7 @@ const add = async (req, res, next) => {
             product_id: item.product.id,
             name: item.name,
             status: item.status,
-            img: process.env.IMG_PATH+'/'+item.product.images[0],
+            img: `${process.env.IMG_PATH+'/'+item.product.images[0]}`,
             size: item.size,
             color: item.color,
             count: item.count,
