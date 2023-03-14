@@ -1,7 +1,6 @@
 const jwt = require('jsonwebtoken');
 const redis = require('./redis');
 const { deleteFile } = require('./upload');
-const secret = process.env.SECRET_KEY;
 module.exports = {
     /* Validation for Request Body */
     validateBody: (schema) => {
@@ -51,7 +50,7 @@ module.exports = {
         return async (req, res, next) => {
             if (req.headers.authorization) {
                 let token = req.headers.authorization.split(" ")[1];
-                jwt.verify(token, secret, async (err, decoded) => {
+                jwt.verify(token, `${process.env.SECRET_KEY}`, async (err, decoded) => {
                     if (err) {
                         next(new Error(`Tokeinzation Error : ${err.message}`));
                     } else {
