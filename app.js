@@ -75,17 +75,18 @@ app.use('/test', testRoute);
 
 /* Run Functions  */
 const defaultData = async () => {
-    // let migration = require('./migrations/migrate');
-    // const { sleep } = require('./utils/helper');
+    let migration = require('./migrations/migrate');
+    const { sleep } = require('./utils/helper');
     /* Migration To Tables */
-    // await migration.migrateUser();
-    // await migration.migrateRolePermission();
-    // await sleep(5000);
-    // await migration.migrateRoleAdd();
+    migration.migrateUser();
+    migration.migrateRolePermission();
+    await sleep(5000);
+    await migration.migrateRoleAdd();
     /* Table backs up to Json File */
     // await migration.backup(); 
 }
-// defaultData();
+defaultData();
+
 const chatController = require('./controllers/chat');
 /* Chat */
 io.of('chat').use(chatController.chatToken).on('connection', socket => chatController.initialize(io, socket));
