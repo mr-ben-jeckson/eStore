@@ -36,7 +36,12 @@ const login = async (req, res, next) => {
         if (Helper.comparePass(req.body.password, validUser.password)) {
             let user = validUser.toObject();
             delete user.password;
-            user.token = Helper.makeToken(user);
+            try {
+                user.token = Helper.makeToken(user);
+            } catch (err) {
+                next(new Error(err.message));
+                return;
+            }
             redis.set(user._id, user);
             Helper.fMsg(res, "Login Success", user);
         } else {
