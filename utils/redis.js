@@ -1,4 +1,6 @@
-const Redis = require('async-redis').createClient();
+const Redis = require('async-redis').createClient({
+    url: process.env.REDIS_URL
+});
 /* Using Redis Memory Store */
 
 module.exports = {
