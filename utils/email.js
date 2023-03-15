@@ -7,11 +7,11 @@ const partialsView = path.resolve(__dirname, '../utils/mail/templates/partials')
 module.exports = {
     sendMail: (payload) => {
         let transporter = nodemailer.createTransport({
-            host: process.env.SMTP_HOST,
-            port: process.env.SMTP_POST,
+            host: `${process.env.SMTP_HOST}`,
+            port: `${process.env.SMTP_POST}`,
             auth: {
-                user: process.env.SMTP_USER,
-                pass: process.env.SMTP_PASSWORD
+                user: `${process.env.SMTP_USER}`,
+                pass: `${process.env.SMTP_PASSWORD}`
             }
         });
         transporter.use('compile', hbs({
@@ -26,7 +26,7 @@ module.exports = {
             extName: '.handlebars'
         }));
         let mailOptions = {
-            from: process.env.EMAIL,
+            from: `${process.env.EMAIL}`,
             to: payload.to,
             subject: payload.sub,
             template: 'index',
