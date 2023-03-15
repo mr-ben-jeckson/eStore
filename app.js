@@ -92,7 +92,7 @@ io.of('chat').use(chatController.chatToken).on('connection', socket => chatContr
 
 /* TASK SCHEDULING */
 const appController = require('./controllers/app');
-appController.jobs();
+appController.jobs;
 
 /* ERROR HANDLING */
 app.use((err, req, res, next) => {
