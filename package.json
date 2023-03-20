@@ -10,7 +10,7 @@
   },
   "keywords": [],
   "author": "Ben Jeckson",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "@joi/date": "^2.1.0",
     "async-redis": "^2.0.0",
