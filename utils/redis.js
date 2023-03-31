@@ -1,6 +1,5 @@
-const Redis = require('async-redis').createClient({
-    url: process.env.REDIS_URL
-});
+const Redis = require('async-redis').createClient(); 
+/* Redis does't need { process.env.REDIS_URL } if you could install redis on internel server */ 
 /* Using Redis Memory Store */
 
 module.exports = {
