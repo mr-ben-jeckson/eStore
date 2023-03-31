@@ -33,6 +33,31 @@ const initialize = async(io, socket) => {
     socket['currentUserId'] = socket.userPayload._id;
     await liveUser(socket.id, socket.userPayload);
     socket.on('message', data => incomingMessage(io, socket, data));
+    socket.on('unseen', data => loadUnseenInbox(socket));
+    socket.on('load-unseen', data => loadUnseenChat(socket, data));
+}
+
+const loadUnseenChat = async(socket, data) => {
+    let limit = Number(process.env.CHAT_LIMIT);
+    let skip = Number(data.page) == 1 ? 0 : (Number(data.page) - 1);
+    let skipCount = skip * limit;
+    let chats = await chatDB.find({
+        $or: [
+            { from: socket.currentUserId },
+            { to: socket.currentUserId }
+        ]
+    }).sort({ created : -1 }).skip(skipCount).limit(limit).populate('from to', '_id name');
+    socket.emit('messages', chats);
+}
+
+const loadUnseenInbox = async(socket) => {
+    let unseen = await inboxDB.find({ to: socket.currentUserId });
+    if( unseen.length > 0) {
+        unseen.forEach(async(item) => {
+            await inboxDB.findByIdAndDelete(item._id);
+        })
+    }
+    socket.emit('unseen', { msg: unseen.length })
 }
 
 const incomingMessage = async(io, socket, data, next) => {

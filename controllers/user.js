@@ -20,7 +20,9 @@ const register = async (req, res, next) => {
     }
     req.body.password = Helper.encode(req.body.password);
     let registerUser = await new DB(req.body).save();
-    Helper.fMsg(res, "User Registration Success", registerUser);
+    let responseUser = registerUser.toObject(); // chaning object to removed password
+    delete responseUser.password;
+    Helper.fMsg(res, "User Registration Success", responseUser);
 }
 
 /* User Authentication or Logging In */
